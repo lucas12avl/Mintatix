@@ -1,1 +1,1 @@
-# EventTickets
+Mintatix
