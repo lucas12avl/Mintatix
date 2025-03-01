@@ -8,18 +8,22 @@ Last Updated: 01/03/2025
 “Third-Party Code” refers to code originating from external sources, that is incorporated under their respective open-source licenses (e.g., MIT License).
 “Software” refers collectively to the Original Code plus Third-Party Code, documentation, and other materials in the Repository.
 “Licensee” refers to any individual or legal entity who obtains a copy of the Software.
+
 2. Copyright and Ownership
 Ownership of Original Code. The Author retains all right, title, and interest, including all intellectual property rights, in and to the Original Code. The Author does not waive any rights to the Original Code except as expressly stated in this License.
 Ownership of Third-Party Code. All Third-Party Code incorporated in the Software is governed by their respective open-source licenses (e.g., MIT License). The Author does not claim ownership of the Third-Party Code and respects all obligations arising from such open-source licenses.
 Combined Distribution. The Software, as found in this Repository, contains both Original Code and Third-Party Code. Any use of or distribution of the Third-Party Code must comply with the respective open-source licenses. The terms of this License apply only to the Author’s Original Code and do not alter or supersede any terms of the Third-Party Code licenses.
+
 3. License Grant (Original Code)
 Restricted Use. Subject to the terms and conditions of this License, the Author hereby grants to the Licensee a non-transferable, non-sublicensable, non-exclusive, revocable right to view and evaluate the Original Code for internal review only, provided that the Licensee does not modify, distribute, publicly display, publicly perform, sublicense, sell, or otherwise exploit the Original Code or any derivative works thereof without prior written permission from the Author.
 Commercial Use Requires Payment. Any form of commercial or production use of the Original Code—whether in whole, in part, or in modified form—requires a separate paid license from the Author. Such license terms and fees must be negotiated and agreed upon in writing with the Author.
 Derivative Works. Creating derivative works (e.g., forks, modifications) based on the Original Code for any use beyond private internal evaluation is also strictly prohibited unless a paid license agreement has been executed with the Author.
+
 4. License Limitations
 No Distribution Without Consent. Licensee shall not distribute, sell, lease, rent, lend, or otherwise provide the Original Code (or any modified version of it) to any third party unless explicitly permitted under a separate, written paid license agreement with the Author.
 No Removal of Notices. Licensee shall not remove, alter, or obscure any copyright, attribution, or other proprietary notices, disclaimers, or license terms included with the Software.
 Compliance With Third-Party Licenses. Any use of the Third-Party Code shall remain subject to the respective open-source licenses. To the extent there is any conflict between this License and any Third-Party Code license, the terms of the Third-Party Code license shall control solely with respect to that portion of the Software.
+
 5. Fees and Payment
 Any Licensee who intends to use the Original Code for commercial, public, or production purposes must enter into a separate agreement with the Author and pay the applicable license fee(s) as determined by the Author. Failure to do so shall constitute a violation of this License and an infringement of the Author’s copyright.
 
@@ -27,6 +31,7 @@ Any Licensee who intends to use the Original Code for commercial, public, or pro
 Termination by the Author. The Author may terminate this License immediately upon written notice if the Licensee breaches any provision of this License.
 Effect of Termination. Upon termination, the Licensee must immediately cease using the Original Code and destroy all copies of the Original Code in their possession or control. Termination shall not limit any other rights or remedies available to the Author at law or in equity.
 Survival. The following sections survive termination: 2 (Copyright and Ownership), 4 (License Limitations), 6 (Termination), 7 (Disclaimer of Warranty), 8 (Limitation of Liability), 9 (Indemnification), and 10 (General).
+
 7. Disclaimer of Warranty
 THE ORIGINAL CODE IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. THE AUTHOR DOES NOT WARRANT THAT THE ORIGINAL CODE WILL BE ERROR-FREE OR THAT IT WILL FUNCTION WITHOUT INTERRUPTION.
 
@@ -42,6 +47,7 @@ Entire Agreement. This License constitutes the entire agreement between the part
 Amendments. No amendment or modification of this License shall be binding unless in writing and signed by the Author.
 Severability. If any provision of this License is held to be invalid or unenforceable, that provision shall be construed in a manner consistent with applicable law to reflect, as nearly as possible, the original intent of the parties, and the remaining provisions shall remain in full force and effect.
 No Waiver. The failure of the Author to enforce any term of this License shall not be deemed a waiver of its right to do so.
+
 11. Third-Party Open-Source Licenses
 This repository may includes the following Third-Party Code under open-source licenses (e.g., MIT License). Please see the respective LICENSE files or headers within the code for the full text of those licenses
 
@@ -51,4 +57,3 @@ IN WITNESS WHEREOF, by accessing, downloading, or in any way using the Original 
 
 Lucas Dalmau Garcés
 lucasdalmau03@gmail.com
-
