@@ -51,6 +51,10 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     ************************************/
     event TicketsMinted(address indexed user, uint256 quantity);
     event RefundIssued(address indexed user, uint256 refund); //notify how much the contract has refound to the user
+    event PendingSuccess(uint256 indexed tokenID, uint256 timestamp); //the dapp will see how much time the user have to redeem --> qr + countdown
+    event RedeemedSuccess(uint256 indexed tokenID, address validator);
+    event TicketForSale(uint256 indexed tokenID, uint256 salePrice);
+    event TicketCancelledForSale(uint256 indexed tokenID, address ticketOwner);
  
 
     /************************************
@@ -127,6 +131,113 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
         
     }
 
+    //sets the state of the ticket to pendign, this permits the user to redeem the ticket with a validator (the dapp will generate a QR that the validator will scan )
+    function setPendingToTKT(uint256 tokenID) external {
+
+        if(useTimeLimit){
+            require(block.timestamp < eventEndTime, "the event has finished");
+        }
+        require(ownerOf(tokenID) == msg.sender, "you are not the owner of this ticket");
+
+        //two possibilities to put in pending a ticket:
+
+        //when the ticket is in pendign but the time to redeem it has expired
+        if (tickets[tokenID].status == TicketStatus.Pending){ 
+            require(block.timestamp > tickets[tokenID].pendingSince + pendingDuration, "ticket pending period has not expired yet");
+
+        }
+        else{ //when the ticket is in active state
+            require(tickets[tokenID].status == TicketStatus.Active, "only Active tickets can be changed to Pending");
+            tickets[tokenID].status = TicketStatus.Pending;
+        }
+
+        tickets[tokenID].pendingSince = block.timestamp;
+        emit PendingSuccess(tokenID, block.timestamp);
+    }
+
+    //sets a ticket with pending state to 
+    function setRedeemedToTKT(uint256 tokenID) external onlyRole(VALIDATOR_ROLE) { //only validators can redeem a pending ticket to ensure the usr enters the event [the validator can be an automatic machine]
+
+        if(useTimeLimit){
+            require(block.timestamp < eventEndTime, "the event has finished");
+        }
+
+        require(tickets[tokenID].status == TicketStatus.Pending, "only Pending tickets can be redeemed");
+
+        //cant redeem if the timelimit exceeds the timestamp
+        require(block.timestamp < tickets[tokenID].pendingSince + pendingDuration, "the time to redeem the ticket has expired, re activate the pending status");
+
+
+        tickets[tokenID].status = TicketStatus.Redeemed;
+        emit RedeemedSuccess(tokenID, msg.sender); //msg.sender bc if a validator is a human and has a bad behaviour, we can identify them, or if a machine didnt redeem as much as others we can check if something its wrong.
+
+    }
+
+    function addTicketsForSale(uint256 tokenID, uint256 price ) external {
+
+        if(useTimeLimit){
+            require(block.timestamp < eventEndTime, "the event has finished");
+        }
+        require(ownerOf(tokenID) == msg.sender, "you are not the owner of this ticket");
+        _checkPendingStateIsFinished(tokenID); //the usr can't put to sell a ticket that is still in pending state (when the pending time has not finished)
+        require(tickets[tokenID].status == TicketStatus.Active, "only Active tickets can be sold"); // in this case, ensures that is not Redeemed
+        
+        // operation with 0.3 it's incorrect bc is an integer!!!
+        require( price < (ticketPrice * 130) / 100, "the ticket cannot be sold for more than 30% above the original price");
+
+        tickets[tokenID].seller = msg.sender;
+        tickets[tokenID].salePrice = price;
+
+        // now, the ticketNFT will belong to the smart contract, thats because if someone pays the price,
+        // the smart contrcat will transfer the amount to the seller, and the ticket to the buyer
+
+        safeTransferFrom(msg.sender, address(this), tokenID, ""); //ERC721A
+        emit TicketForSale(tokenID, price);
+
+    }
+
+    function cancelTicketForSale(uint256 tokenID) external{
+        // you can also cancel the sale if the event has finished in order to get back your ticket 
+
+        require(tickets[tokenID].seller != address(0), "the ticket is not for sale");
+        //it's needed to check that is the seller who wants to get back his ticket from the smart contract
+        require(tickets[tokenID].seller == msg.sender, "you are not the owner of this ticket");
+        
+
+        tickets[tokenID].seller = address(0);
+        tickets[tokenID].salePrice = 0;
+
+        // until now, the contract is the owner, thats bc the "this." is nedeed inn order to make the transfer 
+        // in the name of the smart contract (teh actual owner)
+        // if it's called without "this." the msg.sender will be the user, and if the token is on sale, it not belongs to him
+        this.safeTransferFrom(address(this), msg.sender, tokenID, ""); //msg.sender is the seller bc it's a requirement in the top of the function
+        emit TicketCancelledForSale(tokenID, msg.sender);
+        
+    }
+
+    /************************************
+    *              INTERNAL             *
+    ************************************/
+
+    //smart contracts can't make time events for do smthg. When the user wants to do smthg after put the pending state
+    // (and the pending time finishes), we have to change the state automatically before doing the requested action.
+    function _checkPendingStateIsFinished(uint256 tokenID) internal {
+
+        if(tickets[tokenID].status == TicketStatus.Pending){
+            if(tickets[tokenID].pendingSince + pendingDuration < block.timestamp){  //check if the pendign time has finished
+
+                tickets[tokenID].status = TicketStatus.Active;
+            
+            }
+            else{ //if the ticket is still pending, 
+                revert("your ticket is still pending. Please wait until you take any further action");
+            }
+        }
+        //if the ticket is not pendign, we can continue 
+
+    }
+
+
 
     /************************************
     *           ONLY OWNER              *
@@ -149,6 +260,11 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     /****** overrides ERC721A, AccessControl to follow ERC165******/
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721A, AccessControl) returns (bool) {
         return ERC721A.supportsInterface(interfaceId) || AccessControl.supportsInterface(interfaceId);
+    }
+
+    //in order to let the smart contract NFTs, it has to implement the ERC721Receiver to ensure it knows how to properly manipulate NFTs and the recived NFT won't be blocked there
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
 
