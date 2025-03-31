@@ -6,7 +6,7 @@ import "node_modules/erc721a/contracts/ERC721A.sol";
 import "node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
+import "node_modules/@openzeppelin/contracts/utils/Strings.sol";
 
 contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
 
@@ -43,9 +43,6 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     mapping(uint256 => Ticket) public tickets; // all the minted tickets in one place
   
   
-    
-
-
     /************************************
     *              EVENTS               *
     ************************************/
@@ -55,7 +52,7 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     event RedeemedSuccess(uint256 indexed tokenID, address validator);
     event TicketForSale(uint256 indexed tokenID, uint256 salePrice);
     event TicketCancelledForSale(uint256 indexed tokenID, address ticketOwner);
- 
+    event TicketSold(uint256 indexed tokenID,  uint256 salePrice, address seller, address buyer);
 
     /************************************
     *           CONSTRUCTOR             *
@@ -215,6 +212,45 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
         
     }
 
+    function buyTicket(uint256 tokenID) external payable nonReentrant{
+
+        if(useTimeLimit){
+            require(block.timestamp < eventEndTime, "the event has finished");
+        }
+
+        require(tickets[tokenID].seller != msg.sender, "you can't buy your own ticket");
+        require(tickets[tokenID].seller != address(0), "the ticket is not for sale");
+        require(ticketsPurchased[msg.sender] + 1 <= maxTicketsPerAddress, "limit of owned tickeds reached");
+        require(msg.value >= tickets[tokenID].salePrice, "insuficient founds");
+
+        uint256 salePrice = tickets[tokenID].salePrice;
+        address seller = tickets[tokenID].seller;
+
+        ticketsPurchased[msg.sender] += 1;
+        tickets[tokenID].salePrice = 0;
+        tickets[tokenID].seller = address(0);
+        this.safeTransferFrom(address(this), msg.sender, tokenID, "");
+        payable(seller).transfer(salePrice);
+
+         //return the remaining amount
+        if(msg.value > salePrice){
+            uint256 refound = msg.value - salePrice;
+            payable(msg.sender).transfer(refound);
+            emit RefundIssued(msg.sender, refound); // notify the user
+
+        }
+
+        emit TicketSold(tokenID, salePrice, seller, msg.sender);
+        
+    }
+
+    function tokenURI(uint256 tokenID) public view override returns (string memory) {
+
+        require(_exists(tokenID), "the token does not exists");
+        return string(abi.encodePacked(baseTokenURI, Strings.toString(tokenID)));
+    }
+
+
     /************************************
     *              INTERNAL             *
     ************************************/
@@ -243,6 +279,23 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     *           ONLY OWNER              *
     ************************************/
 
+
+    function withdraw() external onlyOwner nonReentrant{
+
+        payable(owner()).transfer(address(this).balance);
+    }
+
+    //if it's needeed to reestablish the base tokenURI
+    function setBaseURI(string memory _baseTokenURI) external onlyOwner {
+        baseTokenURI = _baseTokenURI;
+    }
+
+    //if it's nedeed to reestablish the pending duration (in seconds for more control)
+    function setPendingDuration(uint256 _seconds) external onlyOwner {
+        
+        pendingDuration = _seconds;
+    }
+
     /*     ROLE MANAGEMENT      */
     function addValidator(address newValidator) external onlyOwner {
         _grantRole(VALIDATOR_ROLE, newValidator);
@@ -265,6 +318,40 @@ contract EventTicket is ERC721A, Ownable, AccessControl, ReentrancyGuard{
     //in order to let the smart contract NFTs, it has to implement the ERC721Receiver to ensure it knows how to properly manipulate NFTs and the recived NFT won't be blocked there
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
         return this.onERC721Received.selector;
+    }
+
+    // in order to protect users, any pending tciket or ticket on sale can't be transfered, including the standard transfers with ERC721
+    function _beforeTokenTransfers(address from, address to, uint256 startTokenID, uint256 quantity) internal override { // this will execute when mint, transferFrom
+        if (from != address(0) && to != address(0)) {
+
+            for (uint256 tokenID = startTokenID; tokenID < startTokenID + quantity; tokenID++) {
+
+               
+                _checkPendingStateIsFinished(tokenID);
+                
+                if(tickets[tokenID].seller != address(0)){ //if the ticket is on sale, transfers are resticted only to put 
+                    
+                    //when we arrive here, the addTicketForSale() puts the info of the seller and the price in the tikcet, before making the trsnfer
+                    // thats bc it's needed to look if the transfer that is going to make is to put the contract as owner of the ticket 
+                    //(The ticket is in the process of being put on sale)
+                    bool isListingSale = (from == tickets[tokenID].seller && to == address(this)); //the case wehn the user whants to put his ticket on sale 
+
+                    //if the request is from the smart contract and to is the seller --> 
+                    //the user is trying to get back his ticket that is on sale, and the actual owner (the smart contract) has to auhorize the transfer
+                    bool isCancelSale = (from == address(this) && to == tickets[tokenID].seller); 
+
+                    //If the ticket is for sale or is being put up for sale, we cannot transfer it to another person with TransferFrom
+                    if (!isListingSale && !isCancelSale) { 
+                        revert("cannot transfer tickets that are on sale in the smart contract. Please cancel the ticket sale first");
+                        //this revert is just in case a user finds a way to do the transfer, but, the owner of the token is the smart contract when the token is for sale
+                        // so the real owner (the seller) can't transfer his token bc it not belongs to him (while it's for sale) 
+                    }
+                }
+               
+            }
+
+        }
+
     }
 
 

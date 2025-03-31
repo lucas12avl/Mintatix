@@ -352,3 +352,152 @@ describe("tries to cancel a sell --> cancelTicketForSale()", function(){
 
 })
 
+describe("testing buyTicket()", function(){
+
+    it("addr2 buys the ticket ID:0 to addr1 successfully", async function(){
+        
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
+        await eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.1")});
+        expect (await eventTicketContract.ownerOf(0n)).to.equal(addr2.address);
+
+    })
+
+    it("addr2 buys the ticket ID:0 to addr1 but puts LESS founds that necessary", async function(){
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
+        await expect (eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.05")}))
+        .to.be.revertedWith("insuficient founds");
+
+
+    })
+
+    it("addr2 buys the ticket ID:0 to addr1 but puts MORE founds that necessary (the smart contract returns the excedent)", async function(){
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
+        await expect (eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.2")}))
+        .to.emit(eventTicketContract, "RefundIssued").withArgs(addr2.address, ethers.parseEther("0.1"));
+
+    })
+
+
+    it("addr2 tries to buy the ticket ID:1 to addr1 but is not for sale", async function(){
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
+        await expect (eventTicketContract.connect(addr2).buyTicket(1n, { value: ethers.parseEther("0.1")}))
+        .to.be.revertedWith("the ticket is not for sale");
+
+
+    })
+
+    it("addr1 tries to buy a ticket, but he reached the limit of ticket that he can own", async function(){
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithTicketOnSaleFixture);
+        await eventTicketContract.connect(addr1).mintTickets(1, { value: ethers.parseEther("0.1")});
+
+        await eventTicketContract.connect(addr2).addTicketsForSale(2n, ethers.parseEther("0.1"))
+        await expect (eventTicketContract.connect(addr1).buyTicket(2n, { value: ethers.parseEther("0.1")}))
+        .to.be.revertedWith("limit of owned tickeds reached");
+
+
+    })
+
+    it("addr2 tries to buy a ticket when the event has finished", async function(){
+
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithTicketOnSaleFixture);
+
+        await network.provider.send("evm_increaseTime", [3605]); //the event has finished
+        await network.provider.send("evm_mine");
+
+        await expect (eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.1")}))
+        .to.be.revertedWith("the event has finished");
+
+    })
+
+    it("addr1 tries to buy his own ticket", async function(){
+
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithTicketOnSaleFixture);
+
+        await expect (eventTicketContract.connect(addr1).buyTicket(0n, { value: ethers.parseEther("0.1")}))
+        .to.be.revertedWith("you can't buy your own ticket");
+
+    })
+})
+
+describe("testing ERC721 trasnsferFrom()", function(){
+
+    it("addr1 tries to transfer to addr2 a ticket that has the pending state (pending time has NOT finished)", async function(){
+
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+        await expect (eventTicketContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0n))
+        .to.be.revertedWith("your ticket is still pending. Please wait until you take any further action");
+
+
+    })
+
+    it("addr1 tries to transfer to addr2 a ticket that has the pending state (pending time has finished)", async function(){
+
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+
+        await network.provider.send("evm_increaseTime", [605]); //the pending time has finished
+        await network.provider.send("evm_mine");
+        await eventTicketContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0n)
+
+        expect (await eventTicketContract.ownerOf(0n)).to.equal(addr2.address);
+        
+    })
+
+    it("addr1 tries to transfer to addr2 a ticket that it's selling with the smart contract implementation", async function(){
+
+        // cant be permitted because it can be a malicious transfer or produce bugs with the sale of the smart contract
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithTicketOnSaleFixture);
+
+        //will revert because the owner now is the smart contract, the user can't do anything
+        await expect (eventTicketContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0n)) 
+        .to.be.revertedWithCustomError(eventTicketContract, "TransferFromIncorrectOwner()");
+
+        
+    })
+
+
+    
+})
+
+describe("testing withdraw", function(){
+
+    it("the owner deploys the contract, addr2 buys 3 tickets, then the owner withdraws", async function(){
+        
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployContractFixture);
+
+        const balanceAddr1Before = await ethers.provider.getBalance(addr1.address);
+
+        await eventTicketContract.connect(addr2).mintTickets(3, { value: ethers.parseEther("0.3")});
+        await eventTicketContract.connect(addr1).withdraw();
+
+        const balanceAddr1After = await ethers.provider.getBalance(addr1.address);
+
+        expect(balanceAddr1Before < balanceAddr1After).to.be.true;
+
+    })
+
+
+})
+
+describe("testing tokenURI()", function(){
+
+    it("testing the tokenURI of the three tickets sold", async function(){
+
+        const {eventTicketContract} = await loadFixture(deployWithMintedTktFixture);
+
+        // save the URIs
+        const tokenURI0 = await eventTicketContract.tokenURI(0);
+        const tokenURI1 = await eventTicketContract.tokenURI(1);
+        const tokenURI2 = await eventTicketContract.tokenURI(2);
+        
+        //expected
+        expect(tokenURI0).to.equal("null0");
+        expect(tokenURI1).to.equal("null1");
+        expect(tokenURI2).to.equal("null2");
+
+
+    })
+
+
+})
