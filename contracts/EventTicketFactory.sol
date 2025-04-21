@@ -12,23 +12,27 @@ contract EventTicketFactory is Ownable {
 
     address[] public stateEvents;
 
-
-    constructor()  Ownable(msg.sender){
-        
-        EventTicketLogic logic = new EventTicketLogic();
-        eventLogic = address(logic);
-    }
-
     event EventCreated( 
         address indexed eventAddress,
         address indexed creator,
         string name,
         uint256 ticketPrice,
         uint256 maxSupply,
+        string eventURI,
         uint256 maxTicketsPerAddress,
         bool useTimeLimit,
+        uint256 startPurchaseTime,
         uint256 eventEndTime
     );
+    event logicContract (address indexed logicContract);
+    constructor()  Ownable(msg.sender){
+        
+        EventTicketLogic logic = new EventTicketLogic();
+        eventLogic = address(logic);
+        emit logicContract(eventLogic);
+    }
+
+
 
     //creates the proxy contract and initializes it
     function createEvent (
@@ -36,28 +40,36 @@ contract EventTicketFactory is Ownable {
         string memory _symbol,
         uint256 _ticketPrice,
         uint256 _maxSupply,
+        string memory _eventURI,
         string memory _baseTokenURI,
         uint256 _maxTicketsPerAddress,
         bool _useTimeLimit,
+        uint256 _startPurchaseTime,
         uint256 _eventEndTime
     ) external onlyOwner returns (address){
 
         address clone = Clones.clone(eventLogic);
+
+         EventTicketLogic.EventConfig memory config = EventTicketLogic.EventConfig({
+            name: _name,
+            symbol: _symbol,
+            ticketPrice: _ticketPrice,
+            maxSupply: _maxSupply,
+            eventURI: _eventURI,
+            baseTokenURI: _baseTokenURI,
+            maxTicketsPerAddress: _maxTicketsPerAddress,
+            useTimeLimit: _useTimeLimit,
+            startPurchaseTime: _startPurchaseTime,
+            eventEndTime: _eventEndTime
+        });
+
         EventTicketLogic(clone).initialize(
-            _name,
-            _symbol,
-            _ticketPrice,
-            _maxSupply,
-            _baseTokenURI,
-            _maxTicketsPerAddress,
-            _useTimeLimit,
-            _eventEndTime,
+            config,
             msg.sender
         );
 
         stateEvents.push(clone);
-
-        emit EventCreated(clone,msg.sender, _name, _ticketPrice, _maxSupply, _maxTicketsPerAddress, _useTimeLimit, _eventEndTime);
+        emit EventCreated(clone, msg.sender, _name, _ticketPrice, _maxSupply, _eventURI, _maxTicketsPerAddress, _useTimeLimit, _startPurchaseTime, _eventEndTime);
 
         return clone;
     }
@@ -65,5 +77,6 @@ contract EventTicketFactory is Ownable {
     function getEvents() external view returns (address[] memory) {
         return stateEvents;
     }
+    
 
 }

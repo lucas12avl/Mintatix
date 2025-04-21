@@ -3,13 +3,15 @@ const {expect} = require("chai");
 const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers"); //efficient way to save the initial state of the contrcat, making test to begin with the same state
 
 
+
 async function deployContractFixture() { // the smart contrcat initial state for all tests
 
     const [addr1, addr2, addr3, addr4] = await ethers.getSigners();
     const eventTicketFactoryContract = await ethers.deployContract("EventTicketFactory");
-    
-    // params: name, symbol, ticketPrice, maxSupply, baseTokenURI, maxTicketsPerAddress, useTimeLimit, eventEndTime
-    await eventTicketFactoryContract.connect(addr1).createEvent("Event001","ETKT", ethers.parseEther("0.1"), 4n, "null", 3n, true, 1n);
+
+    blockTimestamp = (await ethers.provider.getBlock('latest')).timestamp;
+    // params: name, symbol, ticketPrice, maxSupply, eventURI, baseTokenURI, maxTicketsPerAddress, useTimeLimit, startPurchaseTime, eventEndTime
+    await eventTicketFactoryContract.connect(addr1).createEvent("Event001","ETKT", ethers.parseEther("0.1"), 4n, "null", "null", 3n, true, blockTimestamp+1, blockTimestamp+3600);
 
 
     const cloneAddress = await eventTicketFactoryContract.connect(addr1).getEvents();
@@ -44,7 +46,7 @@ describe("mintTickets testing", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployContractFixture);
         await expect(eventTicketContract.connect(addr1).mintTickets(4n, { value: ethers.parseEther("0.4") }))
-        .to.be.revertedWith("limit of owned tickeds reached");
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketLimitReached");
     })
 
 
@@ -64,7 +66,7 @@ describe("mintTickets testing", function(){
         const {eventTicketContract, addr1} = await loadFixture(deployContractFixture);
 
         await expect(eventTicketContract.connect(addr1).mintTickets(2n, { value: ethers.parseEther("0.0") }))
-        .to.be.revertedWith("insuficient founds");
+        .to.be.revertedWithCustomError(eventTicketContract, "InsufficientFunds");
         
     })
 
@@ -77,7 +79,7 @@ describe("mintTickets testing", function(){
     
         //mint a ticket expecting revert bc time limit 
         await expect(eventTicketContract.connect(addr1).mintTickets(1, { value: ethers.parseEther("0.1") }))
-        .to.be.revertedWith("the event has finished");
+        .to.be.revertedWithCustomError(eventTicketContract, "EventEnded");
     });
 
 })
@@ -90,14 +92,22 @@ describe("add/remove a validator ", function(){
         await eventTicketContract.connect(addr1).addValidator(addr3);
         await eventTicketContract.connect(addr1).mintTickets(2, { value: ethers.parseEther("0.2")});
 
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
-        await eventTicketContract.connect(addr3).setRedeemedToTKT(0n);
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
+        await eventTicketContract.connect(addr3).setRedeemedToTKT(0n, nonce0);
 
+
+          
         await eventTicketContract.connect(addr1).removeValidator(addr3);
-        await eventTicketContract.connect(addr1).setPendingToTKT(1n);
 
-        await expect (eventTicketContract.connect(addr3).setRedeemedToTKT(1n))
-        .to.be.revertedWithCustomError(eventTicketContract, "AccessControlUnauthorizedAccount")
+        const nonce1 = ethers.randomBytes(32);
+        const commit1 = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [1n, nonce1])); 
+        await eventTicketContract.connect(addr1).setPendingToTKT(1n, commit1);
+        await expect (eventTicketContract.connect(addr3).setRedeemedToTKT(1n, nonce1))
+
+
+        .to.be.revertedWithCustomError(eventTicketContract, "NotAValidator");
 
         
 
@@ -110,9 +120,12 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
 
-       await eventTicketContract.connect(addr1).setPendingToTKT(0n);
-       const ticket = await eventTicketContract.tickets(0n); //take the ticket
-       expect(ticket.status).to.equal(1); //then ".status"
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n,commit0);
+        const ticket = await eventTicketContract.tickets(0n); //take the ticket
+        expect(ticket.status).to.equal(1); //then ".status"
 
     }),
 
@@ -120,16 +133,19 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
         
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
 
         //OBS: don't need to add the validator to redeem because addr1 is the OWNER, and the owner have all the roles implicity
-        await eventTicketContract.connect(addr1).setRedeemedToTKT(0n);
+        await eventTicketContract.connect(addr1).setRedeemedToTKT(0n, nonce0);
         const ticket = await eventTicketContract.tickets(0n);
         expect(ticket.status).to.equal(2) //check if succesfully redeemed
 
 
-        await expect(eventTicketContract.connect(addr1).setPendingToTKT(0n))
-        .to.be.revertedWith("only Active tickets can be changed to Pending");
+        await expect(eventTicketContract.connect(addr1).setPendingToTKT(0n, nonce0))
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketNotActive");
            
 
 
@@ -139,8 +155,11 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
 
-        await expect (eventTicketContract.connect(addr1).setPendingToTKT(2n))
-        .to.be.revertedWith("you are not the owner of this ticket");
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await expect (eventTicketContract.connect(addr1).setPendingToTKT(2n, commit0))
+        .to.be.revertedWithCustomError(eventTicketContract, "NotTicketOwner");
 
 
     }),
@@ -149,8 +168,12 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
         await eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n); //0,1 ethers
-        await expect (eventTicketContract.connect(addr1).setPendingToTKT(2n))
-        .to.be.revertedWith("you are not the owner of this ticket");
+
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await expect (eventTicketContract.connect(addr1).setPendingToTKT(2n, commit0))
+        .to.be.revertedWithCustomError(eventTicketContract, "NotTicketOwner");
 
     });
 
@@ -161,8 +184,11 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
         await network.provider.send("evm_increaseTime", [3601]);
         await network.provider.send("evm_mine");
 
-        await expect(eventTicketContract.connect(addr1).setPendingToTKT(0n))
-        .to.be.revertedWith("the event has finished");
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await expect(eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0))
+        .to.be.revertedWithCustomError(eventTicketContract, "EventEnded");
 
     })
 
@@ -170,21 +196,33 @@ describe("set the ticket to Pending --> setPendingToTKT()", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
 
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
         
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
         const ticketBefore = await eventTicketContract.tickets(0n);
         const timeSinceBefore = ticketBefore.pendingSince;
 
         await network.provider.send("evm_increaseTime", [660]); //the 10 minutes expires, so, if we call to pending it will renew the pendingSince
         await network.provider.send("evm_mine");
 
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
         const ticketAfter = await eventTicketContract.tickets(0n);
         const timeSinceAfter = ticketAfter.pendingSince;
         
         await expect(timeSinceAfter).greaterThan(timeSinceBefore); //the time must be changed
         await expect(ticketAfter.status).to.equal(1); // the tocket has the pending state
 
+
+    })
+
+    it("addr2 tries to redeem his ticket but puts a commitHash0", async function(){
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
+
+        const commit0 = ethers.ZeroHash;
+        
+        await expect(eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0))
+        .to.be.revertedWithCustomError(eventTicketContract, "InvalidCommit"); //the validator redeems the pending ticket
 
     })
 
@@ -198,9 +236,13 @@ describe("set the ticket to redeemed --> setRedeemedToTKT()", function(){
 
     it("addr2 redeems his ticket ID: 2 succesfully", async function(){
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
-        await eventTicketContract.connect(addr2).setPendingToTKT(2n);
 
-        await eventTicketContract.connect(addr3).setRedeemedToTKT(2n); //the validator redeems the pending ticket
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0);
+
+        await eventTicketContract.connect(addr3).setRedeemedToTKT(2n, nonce0); //the validator redeems the pending ticket
 
         const ticket = await eventTicketContract.tickets(2n);
         expect(ticket.status).to.equal(2) //check if succesfully redeemed
@@ -210,11 +252,15 @@ describe("set the ticket to redeemed --> setRedeemedToTKT()", function(){
     it("addr2 wants to redeem his tikcet ID:2 itself (he's not a validator)", async function(){
 
         const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
-        await eventTicketContract.connect(addr2).setPendingToTKT(2n);
+
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0);
         
         //the user tries to redeem his own ticket
-        await expect (eventTicketContract.connect(addr2).setRedeemedToTKT(2n)) 
-        .to.be.revertedWithCustomError(eventTicketContract, "AccessControlUnauthorizedAccount") //error from the AccesControl.sol import 
+        await expect (eventTicketContract.connect(addr2).setRedeemedToTKT(2n, nonce0)) 
+        .to.be.revertedWithCustomError(eventTicketContract, "NotAValidator");
 
     })
 
@@ -223,27 +269,54 @@ describe("set the ticket to redeemed --> setRedeemedToTKT()", function(){
         await network.provider.send("evm_increaseTime", [3500]);
         await network.provider.send("evm_mine");
 
-        await eventTicketContract.connect(addr2).setPendingToTKT(2n);
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0);
         await network.provider.send("evm_increaseTime", [300]);
         await network.provider.send("evm_mine");
 
-        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n)).to.be.revertedWith("the event has finished")
+        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n, nonce0))
+        .to.be.revertedWithCustomError(eventTicketContract, "EventEnded");
 
     })
 
     it("addr3 tries to redeem the ticket of addr2 that is not in the Pending state", async function(){
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
-        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n)).to.be.revertedWith("only Pending tickets can be redeemed")
+
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n, nonce0))
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketNotPending");
 
     })
 
     it("addr2 tries to redeem his ticket ID:2 when the PENDING TIME of the ticket has finished", async function(){
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
-        await eventTicketContract.connect(addr2).setPendingToTKT(2n);
+
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+
+        await eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0);
         await network.provider.send("evm_increaseTime", [650]); //the pending time is 600 (10 minutes)
         await network.provider.send("evm_mine");
 
-        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n)).to.be.revertedWith("the time to redeem the ticket has expired, re activate the pending status")
+        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n, nonce0))
+        .to.be.revertedWithCustomError(eventTicketContract, "RedeemExpired");
+
+    })
+
+    it("addr2 tries to redeem his ticket but forgives to put the the wrong secret value", async function(){
+        const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
+
+        const nonce0 = ethers.randomBytes(32);
+        const commit0 = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [2n, nonce0]));
+        const nonce1 = ethers.randomBytes(32);
+        await eventTicketContract.connect(addr2).setPendingToTKT(2n, commit0);
+
+        await expect(eventTicketContract.connect(addr3).setRedeemedToTKT(2n, nonce1))
+        .to.be.revertedWithCustomError(eventTicketContract, "InvalidCommit"); //the validator redeems the pending ticket
 
     })
 
@@ -270,10 +343,13 @@ describe("tries to list for sell a ticket --> addTicketsForSale()",function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
 
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
 
         await expect(eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n))
-        .to.be.revertedWith("ticket is still pending. Wait until you take any further action");
+        .to.be.revertedWithCustomError(eventTicketContract, "PendingNotOver");
         
     })
 
@@ -282,11 +358,14 @@ describe("tries to list for sell a ticket --> addTicketsForSale()",function(){
         
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithMintedTktFixture);
 
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
-        await eventTicketContract.connect(addr3).setRedeemedToTKT(0n);
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
+        await eventTicketContract.connect(addr3).setRedeemedToTKT(0n, nonce0);
 
         await expect(eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n)) //0,1 eth
-        .to.be.revertedWith("only Active tickets can be sold");
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketNotActive");
 
 
         
@@ -300,7 +379,7 @@ describe("tries to list for sell a ticket --> addTicketsForSale()",function(){
         await network.provider.send("evm_mine");
 
         await expect(eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n)) //0,1 eth
-        .to.be.revertedWith("the event has finished");
+        .to.be.revertedWithCustomError(eventTicketContract, "EventEnded");
 
         
     })
@@ -310,7 +389,7 @@ describe("tries to list for sell a ticket --> addTicketsForSale()",function(){
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
         
         await expect(eventTicketContract.connect(addr1).addTicketsForSale(2n, 100000000000000000n)) //tries to sell the ticket of addr2
-        .to.be.revertedWith("you are not the owner of this ticket");
+        .to.be.revertedWithCustomError(eventTicketContract, "NotTicketOwner");
         
     })
 
@@ -319,10 +398,39 @@ describe("tries to list for sell a ticket --> addTicketsForSale()",function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
 
-        await expect(eventTicketContract.connect(addr1).addTicketsForSale(0n, 200000000000000000n))//0,1 ethers
-        .to.be.revertedWith("the ticket cannot be sold for more than 30% above the original price");
+        await expect(eventTicketContract.connect(addr1).addTicketsForSale(0n, 200000000000000000n))//0,2 ethers
+        .to.be.revertedWithCustomError(eventTicketContract, "PriceTooHigh");
 
     })
+
+    it("addr1 wants to modify the price of his ticket ID:0 to a lower price", async function(){
+
+        const {eventTicketContract, addr1} = await loadFixture(deployWithMintedTktFixture);
+        await eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n); //0,1 ethers
+        await (eventTicketContract.connect(addr1).addTicketsForSale(0n, 10000000000000000n)); //0,01 ethers
+
+        const ticket0 = await eventTicketContract.tickets(0n);
+        expect(ticket0.salePrice).to.equal(10000000000000000n);
+        expect(ticket0.seller).to.equal(addr1.address);
+        expect(ticket0.status).to.equal(0);
+
+
+    })
+
+
+    it("addr2 wants to modify the price of his ticket ID:0 (not belongs to him)", async function(){
+
+        const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
+        await eventTicketContract.connect(addr1).addTicketsForSale(0n, 100000000000000000n); //0,1 ethers
+        await (eventTicketContract.connect(addr1).addTicketsForSale(0n, 10000000000000000n)); //0,01 ethers
+
+
+        await expect(eventTicketContract.connect(addr2).addTicketsForSale(0n, 10000000000000000n))
+        .to.be.revertedWithCustomError(eventTicketContract, "NotTicketOwner");
+
+    })
+
+    
 })
 
 describe("tries to cancel a sell --> cancelTicketForSale()", function(){
@@ -343,7 +451,7 @@ describe("tries to cancel a sell --> cancelTicketForSale()", function(){
         await eventTicketContract.connect(addr2).addTicketsForSale(2n, 100000000000000000n); //addr2 puts his ticket for sale
 
         await expect(eventTicketContract.connect(addr1).cancelTicketForSale(2n)) //addr1 tries to cncell the sale of addr2
-        .to.be.revertedWith("you are not the owner of this ticket");
+        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleError");
 
 
     })
@@ -353,7 +461,7 @@ describe("tries to cancel a sell --> cancelTicketForSale()", function(){
         const {eventTicketContract, addr1} = await loadFixture(deployWithTicketOnSaleFixture);
 
         await expect(eventTicketContract.connect(addr1).cancelTicketForSale(1n)) //addr1 tries to cncell the sale of addr2
-        .to.be.revertedWith("the ticket is not for sale");
+        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleError");
 
     })
 
@@ -373,7 +481,7 @@ describe("testing buyTicket()", function(){
     it("addr2 buys the ticket ID:0 to addr1 but puts LESS founds that necessary", async function(){
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
         await expect (eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.05")}))
-        .to.be.revertedWith("insuficient founds");
+        .to.be.revertedWithCustomError(eventTicketContract, "InsufficientFunds");
 
 
     })
@@ -389,7 +497,7 @@ describe("testing buyTicket()", function(){
     it("addr2 tries to buy the ticket ID:1 to addr1 but is not for sale", async function(){
         const {eventTicketContract, addr1, addr2, addr3} = await loadFixture(deployWithTicketOnSaleFixture);
         await expect (eventTicketContract.connect(addr2).buyTicket(1n, { value: ethers.parseEther("0.1")}))
-        .to.be.revertedWith("the ticket is not for sale");
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketNotForSale");
 
 
     })
@@ -400,7 +508,7 @@ describe("testing buyTicket()", function(){
 
         await eventTicketContract.connect(addr2).addTicketsForSale(2n, ethers.parseEther("0.1"))
         await expect (eventTicketContract.connect(addr1).buyTicket(2n, { value: ethers.parseEther("0.1")}))
-        .to.be.revertedWith("limit of owned tickeds reached");
+        .to.be.revertedWithCustomError(eventTicketContract, "TicketLimitReached");
 
 
     })
@@ -413,7 +521,7 @@ describe("testing buyTicket()", function(){
         await network.provider.send("evm_mine");
 
         await expect (eventTicketContract.connect(addr2).buyTicket(0n, { value: ethers.parseEther("0.1")}))
-        .to.be.revertedWith("the event has finished");
+        .to.be.revertedWithCustomError(eventTicketContract, "EventEnded");
 
     })
 
@@ -422,7 +530,7 @@ describe("testing buyTicket()", function(){
         const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithTicketOnSaleFixture);
 
         await expect (eventTicketContract.connect(addr1).buyTicket(0n, { value: ethers.parseEther("0.1")}))
-        .to.be.revertedWith("cannot buy your own ticket");
+        .to.be.revertedWithCustomError(eventTicketContract, "NoSelfBuy");
 
     })
 })
@@ -432,17 +540,24 @@ describe("testing ERC721 trasnsferFrom()", function(){
     it("addr1 tries to transfer to addr2 a ticket that has the pending state (pending time has NOT finished)", async function(){
 
         const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
-        await expect (eventTicketContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0n))
-        .to.be.revertedWith("ticket is still pending. Wait until you take any further action");
 
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
+        await expect (eventTicketContract.connect(addr1).transferFrom(addr1.address, addr2.address, 0n))
+        .to.be.revertedWithCustomError(eventTicketContract, "PendingNotOver");
 
     })
 
     it("addr1 tries to transfer to addr2 a ticket that has the pending state (pending time has finished)", async function(){
 
         const {eventTicketContract, addr1, addr2} = await loadFixture(deployWithMintedTktFixture);
-        await eventTicketContract.connect(addr1).setPendingToTKT(0n);
+
+        const nonce0   = ethers.randomBytes(32);
+        const commit0  = ethers.keccak256(ethers.solidityPacked(["uint256", "bytes32"], [0n, nonce0]));
+
+        await eventTicketContract.connect(addr1).setPendingToTKT(0n, commit0);
 
         await network.provider.send("evm_increaseTime", [605]); //the pending time has finished
         await network.provider.send("evm_mine");
@@ -500,9 +615,9 @@ describe("testing tokenURI()", function(){
         const tokenURI2 = await eventTicketContract.tokenURI(2);
         
         //expected
-        expect(tokenURI0).to.equal("null0");
-        expect(tokenURI1).to.equal("null1");
-        expect(tokenURI2).to.equal("null2");
+        expect(tokenURI0).to.equal("null");
+        expect(tokenURI1).to.equal("null");
+        expect(tokenURI2).to.equal("null");
 
 
     })
@@ -516,7 +631,10 @@ describe("initializer vulneravilities", function(){
 
         const {eventTicketContract, addr1} = await loadFixture(deployContractFixture);
 
-        await expect(eventTicketContract.connect(addr1).initialize("EvilInitialize","EvilETKT", ethers.parseEther("0.1"), 4n, "null", 3n, true, 1n, addr1.address))
+        const config = {name: "EvilInitialize", symbol: "EvilETKT", ticketPrice: ethers.parseEther("0.1"), maxSupply: 4n, eventURI: "null", baseTokenURI: "null", maxTicketsPerAddress: 3n, useTimeLimit: true, startPurchaseTime: blockTimestamp + 1, eventEndTime: blockTimestamp + 3600,};
+
+        blockTimestamp = (await ethers.provider.getBlock('latest')).timestamp;
+        await expect(eventTicketContract.connect(addr1).initialize(config, addr1.address))
         .to.be.revertedWith("ERC721A__Initializable: contract is already initialized");
 
     })
