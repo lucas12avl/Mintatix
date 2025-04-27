@@ -1,0 +1,503 @@
+/*GLOBAL CSS */
+
+@font-face {
+  font-family: "Montserrat";
+  src: url('./public/fonts/Montserrat.ttf');  /*the font I selected */
+}
+
+/*global variables */
+:root {
+  /* principal colors  */
+  --bg-dark: #121212; /* backgorund */
+  --bg-content: #1e1e1e; /* for cards */
+  --bg-item: #2c2c2c; /* ticketItems */
+  --bg-surface: #141414; /* color for elements that are on top of another element */
+  --text-color: #c0aede; /* base color fo text */
+  --text-color-light: #e0d8f0; /* base color but highlighted */
+  --border-color: #333; /* generic border color  */
+  --border-color-accent: #c0aede; /* border color for basic text */
+  --overlay-dark-bg: rgba(0, 0, 0, 0.75); /*background for the backgorind cards like disconnect or switchChain */
+
+  /* colors for notifications or buttons */
+  --primary-accent: #a87ffb; /* for buttons */
+  --primary-accent-darker: #8a4fff; /* button gradients */
+  --error-color: #ff6b6b; /* errors */
+  --success-color: #90ee90; /* correct */
+  --warning-color: #ffd700; /* warnings */
+  --info-color: #5bc0de; /* info */
+  --disabled-bg: #555; /* disabled element */
+  --disabled-text: #999; /* disabled text */
+
+
+  /*RGB colors to use it with transparencies in RGBA*/
+  --text-color-rgb: 192, 174, 222;
+  --bg-surface-rgb: 20, 20, 20;
+  --primary-accent-rgb: 168, 127, 251;
+  --error-rgb: 255, 107, 107;
+  --success-rgb: 144, 238, 144;
+  --warning-rgb: 255, 215, 0;
+  --info-rgb: 91, 192, 222;
+
+  /* tipography and better readability */
+  color-scheme: light dark;
+  font-family: "Montserrat", sans-serif; /*  if montserrat it's not possible, then sans serif*/
+  font-synthesis: none; /* just in case to prevent browser mistakes*/
+  font-weight: 400; /* standard font weight */
+  line-height: 1.5; 
+  /*better readability */
+  text-rendering: optimizeLegibility; 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%; /*prevents automatically resizing when rotating screens like phones*/
+}
+
+ /******Global Styles******/
+
+ body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: var(--text-color);
+  font-family: inherit; /* inherits from :root */
+  min-height: 100vh;
+}
+
+/******* base titles *******/
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600; /* more weight */
+  color: var(--text-color-light); /* light color for titles*/
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--text-color-light);
+}
+
+/******** default lists and buttons *********/
+ul, ol {
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
+}
+/******** generic buttons  *********/
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ---base style for button --- */
+button.button, /* apply .button to <button> eleemnts */
+a.button {      /* applies to .button -->  <a> elements*/
+  display: inline-block; 
+  background-color: var(--text-color);
+  color: var(--bg-dark);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  margin: 0.5rem; 
+  border-radius: 6px; 
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500; 
+  text-align: center;
+  text-decoration: none; 
+  transition: opacity 0.2s ease-in-out, background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+button.button:hover,
+a.button:hover {
+  opacity: 0.9;
+}
+
+
+/*all components will include border box, simplefied way to reduce overflows with paddings and marges*/
+*, *::before, *::after { /*all ellemnets ant pseudo elemnts before and after*/
+  box-sizing: border-box;
+}
+
+
+.main-layout {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex; /* to implement de side menu easily*/
+}
+
+.content {
+  flex-grow: 1; /*tries to use all the space  */
+  padding: 2rem;
+  padding-top: 5rem; /* space for the fixed header */
+  /* margin left will be evaulated by the media queries when the menu is visible */
+}
+
+.page-container {
+  width: 100%;
+  max-width: 1200px; /*limt the width for ultra big screens */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.spacer {
+  height: 1rem;
+}
+
+/***** Type of messages *******/
+
+.message.error-message {
+  color: var(--error-color);
+  background-color: rgba(var(--error-rgb, 255, 107, 107), 0.1);
+  border-color: rgba(var(--error-rgb, 255, 107, 107), 0.3);
+  font-weight: 500; /* bolder for error messages */
+}
+
+/********* Account Header **********/
+
+   .account-header {
+    cursor: pointer;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    z-index: 1001; /*on top of all elements (withou include the disconnect) */
+    -webkit-backdrop-filter: blur(3px); /*blur for safari*/
+    backdrop-filter: blur(3px); /*blur for all the others */
+    transition: background-color 0.3s ease, color 0.3s ease; /* smooth transition */
+    color: var(--text-color);
+  }
+  
+  .balance {
+    margin-right: 10px; /*space between balance and address*/
+  }
+  
+  .account-header:hover {
+    background: var(--text-color);
+    color: var(--bg-dark);
+  }
+
+  /*************** generic modal ****************/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-dark-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* modals has to be at the top */
+  padding: 1rem;
+  cursor: pointer; /* closed by js */
+
+  /*blur for the backgorund of the modal*/
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px); 
+}
+
+.modal-content {
+  background: var(--bg-surface);
+  color: var(--text-color);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto; /* if the content is too large will auto fit and will make the user to scroll down */
+  position: relative; /* close btn*/
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  cursor: default; /* the cursor on modals have to be normal */
+}
+
+
+
+
+ /************ Disconnect.tsx *************/
+
+/* will use .modal-overlay and .modal-content */
+
+.disconnect-modal-content p {
+  margin-bottom: 1.5rem;
+}
+
+.disconnect-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.disconnect-modal-content .button {
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
+}
+.disconnect-modal-content .button:hover {
+  opacity: 0.9;
+}
+
+.back-button { 
+  background: var(--disabled-bg);
+  color: #fff; 
+}
+.back-button:hover {
+  background: #666; /* make the btn 'responsive' */
+}
+
+
+
+/****** Menu ********/
+
+.side-menu {
+  background-color: var(--bg-surface);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: fixed;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* minimalist broder */
+  border-radius: 12px;
+  font-weight: bold;
+  z-index: 1000; /* ensure always on top */
+  transition: width 0.3s ease; /* transition for more smooth changes between the 3 styles*/
+}
+
+.menu-logo img {
+  width: 70px;
+  height: auto;
+  display: block;
+}
+
+.side-menu a { /*links inside menu*/
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 2rem; /* more space between the logo and the items  */
+}
+
+.menu-item { /*space between items*/
+  margin-bottom: 1rem;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  white-space: nowrap; /* with this the text will be always in thesame line */
+  overflow: hidden; /*if the text in the same line overflows, the text wont appear */
+}
+
+.menu-link:hover {
+  background-color: rgba(var(--text-color-rgb), 0.15); /*resposive items */
+}
+
+.menu-link.active {
+  background-color: rgba(var(--text-color-rgb), 0.3); /* the text of the active one, has to be less transparent to show as its selected */
+  font-weight: 700;
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0; /* ensure the icon wont be smaller when the width of the screen decreases inside the desktop mode */
+  width: 24px; 
+  text-align: center;
+  margin-right: 1rem;
+}
+
+.menu-label {
+  display: inline; 
+  transition: opacity 0.2s ease;
+}
+
+
+
+  /************************************
+  *          MEDIA QUERIES            *
+  ************************************/
+
+
+/******Desktop (>= 1025px)******/
+@media (min-width: 1025px) {
+
+  .main-layout.menu-visible .content {
+    margin-left: 250px; /* desktop menu wdth  */
+  }
+
+    /****** Menu *******/
+    .side-menu {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 250px; /* the width of the menu*/
+      height: 100vh; /* ensures thta the menu will have all the height of the screen */
+      border-radius: 0;
+      border-right: 1px solid var(--border-color); /* Borde derecho */
+      border-top: none;
+      border-bottom: none;
+      border-left: none;
+    }
+    .menu-logo {
+      display: flex;
+      align-items: center;
+      padding: 1rem; /* custom fix to put the logo in the right place */
+      margin-bottom: 1rem; /* less margin than desktop */
+    }
+    .menu-logo img { width: 50px; margin-right: 0.5rem; } /* smaller logo just in case*/
+    .logo-text { font-size: 1.5rem; font-weight: bold; display: inline; }
+    .menu-icon { margin-right: 1rem; }
+    .menu-label { display: inline; opacity: 1; }
+
+}
+
+/******Tablet (601px - 1024px)******/
+@media (min-width: 601px) and (max-width: 1024px) {
+
+  .main-layout.menu-visible .content {
+    margin-left: 80px; /* tablet menu width */
+  }
+
+  /********* Menu --> shows the logo but not the name of the app, the icons name dispalys in the next line, *********/
+  .side-menu { 
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 80px; /* less width for this wide */
+    height: 100vh;
+    padding: 1rem 0.5rem;
+    align-items: center;
+    border-radius: 0;
+    border-right: 1px solid var(--border-color);
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+  }
+  .menu-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0;
+  }
+  .menu-logo img { width: 50px; } /* smaller logo */
+  .logo-text { display: none; }
+  .menu-items { width: 100%; }
+  .menu-item { margin-bottom: 1rem; }
+  .menu-link {
+    flex-direction: column; 
+    justify-content: center;
+    padding: 0.75rem 0;
+    height: 70px; /*  the space that a item have */
+  }
+  .menu-icon {
+    margin-right: 0;
+    margin-bottom: 0.3rem; /* space under the icon */
+    font-size: 1.6rem; /* bigger icons */
+    line-height: 1;
+  }
+  .menu-label {
+    display: block; /* show the label but in the next row */
+    font-size: 0.7rem; /* the label will be smaller */
+    opacity: 0.8; /* some opacity i think looks better */
+    margin-top: 0.2rem;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+}    
+
+
+    
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+
+  .content {
+    padding: 1rem; /* less padding  */
+    padding-top: 4rem; /* less header space*/
+    padding-bottom: 100px; /* space for menu  */
+  }
+
+  .main-layout.menu-visible .content {
+    margin-left: 0; /* without horizontal borders */
+  }
+
+  /****** Menu Mobile *******/
+  .side-menu {
+    position: fixed;
+    bottom: 15px; /* adjust separation */
+    left: 15px;
+    right: 15px;
+    top: auto;
+    width: auto;
+    height: 65px; /* fixed height */
+    padding: 0.5rem; /* less padding than the others */
+    background-color: rgba(var(--bg-surface-rgb, 20, 20, 20), 0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: row; /* make it horizontal */
+    justify-content: space-around;
+    align-items: center;
+    -webkit-backdrop-filter: blur(8px); /*more blur bc it's at the bottom of the screen and its on top of other structures (it has to be clearly visible) */
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+  }
+  .menu-logo { display: none; }
+
+  .menu-items { 
+    display: flex; 
+    flex-direction: row; 
+    width: 100%; 
+    justify-content: space-around; 
+    margin-top: 0; 
+    gap: 0.5rem;
+  }
+
+  .menu-item { margin-bottom: 0; flex: 1; }
+  
+  .menu-link {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;       
+    padding: 0.6rem;  
+    margin: 0 1.25rem;
+    border-radius: 8px;
+  }
+  .menu-icon { font-size: 1.4rem; margin: 0 0 0 0; /* no margin and smaller icons*/ }
+  .menu-label { display: none; /* labels disabled on mobile */ }
+
+}
