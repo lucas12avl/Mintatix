@@ -2,10 +2,14 @@ import { useAccount, useConnect, useReconnect } from 'wagmi'
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { hardhat } from 'wagmi/chains'; //we have to import hardhat to use this chain with the dapp
+//custom hooks
 import AccountHeader from './components/AccountHeader'
 import Disconnect from './components/Disconnect';
 import ChainSwitcher from './components/ChainSwitcher';
 import Menu from './components/Menu';
+//events page
+import EventGrid from './components/Events/EventGrid';
+import EventDetailPage from './components/Events/EventDetailPage.tsx';
 
 function App() {
 
@@ -63,10 +67,10 @@ function App() {
               <ChainSwitcher chainId={account.chainId} targetChainId={hardhat.id} />
               <Routes>
                 <Route path="/" element={<Navigate to="/events" replace />} /> {/* the default */}
-                <Route path="/events" element={<div>events</div>} />
+                <Route path="/events" element={<EventGrid />} />
                 <Route path="/resales" element={<div>resales</div>} />
                 <Route path="/myTickets" element={<div>myTickets Page</div>} />
-                <Route path="/event/:eventAddress" element={<div>StockEvent</div>} />
+                <Route path="/event/:eventAddress" element={<EventDetailPage />} />
                 <Route path="/eventResale/:eventAddress" element={<div>resaleEvent</div>} />
               </Routes>
             </>
