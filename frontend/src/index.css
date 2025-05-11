@@ -297,10 +297,46 @@ a.button:hover {
   cursor: default; /* the cursor on modals have to be normal */
 }
 
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1; /*no extra heigh */
+  color: var(--text-color);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  padding: 0.2rem; /* hit box for the click */
+}
+.modal-close-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+.ticket-detail-modal__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+.ticket-detail-modal__meta p {
+  display: inline-block;
+  align-items: baseline;
+  margin-right:0.35rem;
+}
+.ticket-detail-modal__meta p svg {
+  margin-right: 8px;
+}
 
 
 
- /************ Disconnect.tsx *************/
+/************ Disconnect.tsx *************/
 
 /* will use .modal-overlay and .modal-content */
 
@@ -869,6 +905,465 @@ a.button:hover {
   filter: none;
 }
 
+/****** MY TICKETS *********/
+
+.my-tickets-container {
+  padding: 1rem 0;
+  margin-bottom: 80px;
+}
+  
+/*tabs*/
+.my-tickets-tabs {
+  display: flex;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border-color);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /*hide scrollbar firefox*/
+}
+.my-tickets-tabs::-webkit-scrollbar { display: none; } /* hide scrollbar (Chrome, Safari) */
+  
+.my-tickets-tab {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: var(--disabled-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px; 
+  white-space: nowrap; /* the text wont overflow with this */
+  flex-shrink: 0; /*prevent shrink */
+}
+
+.my-tickets-tab:hover {
+  color: var(--text-color);
+}
+
+.my-tickets-tab.active {
+  color: var(--text-color-light); /* teh active tab will be more light */
+  border-bottom-color: var(--primary-accent); /* and with the color of the text */
+}
+  
+ /*tab content --> the acordion*/
+.my-tickets-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+  
+  /*EventAccordion*/
+.my-tickets-event-accordion {
+  background-color: var(--bg-item);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  position: relative;
+}
+  
+/* the header of the acordion with the photo */
+.my-tickets-event-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+  color: var(--text-color-light);
+  font-size: 1.1rem;
+  min-height: 100px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center center;
+  background-color: var(--bg-content); /* if no image, the a background like this */
+  z-index: 0; /*with this the cover image will be in the background*/
+}
+  
+/* -- darker overlay for the image (looks nice and teh text is more readable) -- */
+.my-tickets-event-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  z-index: 1; /* between thw content and the background image */
+  transition: background-color 0.3s ease;
+}
+.my-tickets-event-header:hover::before {
+  background-color: rgba(0, 0, 0, 0.55); /* transition to somthg more transparent in order to make it more resposive to the mouse*/
+}
+  
+  /*text and icon for the event header in the ticket item container */
+.my-tickets-event-header-content {
+  position: relative;
+  z-index: 2; 
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1rem; /* space between elements  */
+}
+  
+.my-tickets-event-name {
+  flex-grow: 1;
+  font-weight: 700;
+  color: var(--text-color-light); /* color for the title of every ticket */
+  font-size: 1.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* a little bit of shadow for readability */
+}
+  
+.my-tickets-ticket-count {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  background: rgba(0,0,0,0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+  
+.my-tickets-accordion-icon {
+  margin-left: auto; /* all the item in the left */
+  transition: transform 0.3s ease;
+  font-size: 1.5rem;
+  color: #ffffff; 
+  flex-shrink: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+ }
+
+.my-tickets-event-header.open .my-tickets-accordion-icon { /*the triangle will roatte to show that the acordion is opened*/
+  transform: rotate(180deg);
+}
+  
+/* the contet of the accordion when it's opened */
+.my-tickets-event-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+  background-color: var(--bg-content);
+  padding: 0 1.5rem;
+}
+
+.my-tickets-event-content.open {
+  max-height: 1000px; 
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  transition: max-height 0.4s ease-in, padding 0.4s ease-in;
+}
+
+/*the ticket item inside the accordion*/
+.my-tickets-ticket-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* spece betwwen details and the image*/
+  background-color: var(--bg-item);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem; /* spce between tickets */
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.my-tickets-ticket-item:hover {
+  background-color: var(--bg-content);
+  border-color: #444;
+}
+  .my-tickets-ticket-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .my-tickets-ticket-image-container {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: var(--bg-content);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+.my-tickets-ticket-image { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.my-tickets-ticket-placeholder { 
+  font-size: 0.7rem; 
+  color: var(--disabled-text); 
+  text-align: center; 
+  padding: 0.2rem; 
+}
+  
+.my-tickets-ticket-details {
+  flex-grow: 1;
+  color: var(--text-color);
+  overflow: hidden; /* hide the text overflow if necessary */
+}
+
+.my-tickets-ticket-details p {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap; /*no break*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.my-tickets-ticket-details p:last-child {
+  margin-bottom: 0;
+}
+  
+/*ticket state with colors to be more visual*/
+.my-tickets-ticket-status {
+  font-size: 0.85rem !important; 
+  font-weight: 600 !important;
+  opacity: 1;
+  text-transform: capitalize;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  display: inline-block; /* error with padding slvd*/
+}
+.my-tickets-ticket-status.status-active { 
+  color: var(--success-color); 
+  background-color: rgba(144, 238, 144, 0.1); 
+}
+.my-tickets-ticket-status.status-pending { 
+  color: var(--warning-color); 
+  background-color: rgba(255, 215, 0, 0.1); 
+}
+.my-tickets-ticket-status.status-redeemed { 
+  color: var(--disabled-text);
+  background-color: rgba(85, 85, 85, 0.1); 
+}
+.my-tickets-ticket-status.status-onsale { 
+  color: var(--info-color); 
+  background-color: rgba(91, 192, 222, 0.1); 
+}
+.my-tickets-ticket-status.status-finished { 
+  color: var(--disabled-text); 
+  background-color: rgba(85, 85, 85, 0.1); 
+}
+
+/******** TicketDetailModal ***********/
+
+.ticket-detail-modal__image {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  height: auto; 
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto 1.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-item);
+}
+
+.ticket-detail-modal__name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color-light);
+  margin-bottom: 0.75rem;
+}
+
+.ticket-detail-modal__description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* status indicator  */
+.ticket-detail-modal__status-badge-container {
+  margin-bottom: 1.5rem;
+}
+.ticket-detail-modal__status-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+/*states colors  */
+.ticket-detail-modal__status-badge.status--active { background: rgba(144, 238, 144, 0.15); color: var(--success-color); border-color: rgba(144, 238, 144, 0.3); }
+.ticket-detail-modal__status-badge.status--pending { background: rgba(255, 215, 0, 0.15); color: var(--warning-color); border-color: rgba(255, 215, 0, 0.3); }
+.ticket-detail-modal__status-badge.status--redeemed,
+.ticket-detail-modal__status-badge.status--finished { background: rgba(85, 85, 85, 0.15); color: var(--disabled-text); border-color: rgba(85, 85, 85, 0.3); }
+.ticket-detail-modal__status-badge.status--onsale { background: rgba(91, 192, 222, 0.15); color: var(--info-color); border-color: rgba(91, 192, 222, 0.3); }
+
+/* price info when is on sale */
+.ticket-detail-modal__price-info {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 1.5rem auto;
+  max-width: 350px;
+  text-align: center;
+}
+.ticket-detail-modal__price-info p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+.ticket-detail-modal__price-info strong {
+  color: var(--text-color-light);
+  font-weight: 600;
+}
+
+/* actions is QR and on sale */
+.ticket-detail-modal__actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; 
+}
+
+/* if more than one action */
+.ticket-detail-modal__divider--actions {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 0; /* Controlado por gap */
+  width: 80%;
+}
+
+/* header action */
+.ticket-detail-modal__action-header {
+  font-size: 1.3rem;
+  color: var(--text-color-light);
+  margin: 0 0 0.5rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* countdown - QR container */
+.ticket-detail-modal__redeem-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.ticket-detail-modal__qr-container {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  line-height: 0;
+}
+
+/* resale info */
+.ticket-detail-modal__resale-info {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  line-height: 1.5;
+  width: 100%;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.ticket-detail-modal__resale-info strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* resale form*/
+.ticket-detail-modal__sell-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.ticket-detail-modal__sell-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color-light);
+  font-size: 1.1rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-detail-modal__sell-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+.ticket-detail-modal__sell-input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px rgba(var(--primary-accent-rgb, 168, 127, 251), 0.3);
+}
+
+/* action buttons */
+.ticket-detail-modal__action-button {
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 1.8rem; /* same as primary button */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  text-align: center;
+}
+.ticket-detail-modal__action-button:disabled {
+  background: var(--disabled-bg) !important;
+  color: var(--disabled-text) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* redeeem and sekk button*/
+.ticket-detail-modal__action-button.redeem,
+.ticket-detail-modal__action-button.sell {
+  background: linear-gradient(90deg, var(--primary-accent-darker) 0%, var(--primary-accent) 100%);
+  box-shadow: 0 4px 10px rgba(var(--primary-accent-rgb, 138, 79, 255), 0.2);
+}
+.ticket-detail-modal__action-button.redeem:hover:not(:disabled),
+.ticket-detail-modal__action-button.sell:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(var(--primary-accent-rgb, 138, 79, 255), 0.3);
+  filter: brightness(1.1);
+}
+
+/* cancel resale button */
+.ticket-detail-modal__action-button.cancel-sale {
+  background: rgba(var(--error-rgb, 255, 107, 107), 0.15);
+  color: var(--error-color);
+  border: 1px solid rgba(var(--error-rgb, 255, 107, 107), 0.4);
+  box-shadow: none;
+}
+.ticket-detail-modal__action-button.cancel-sale:hover:not(:disabled) {
+  background: rgba(var(--error-rgb, 255, 107, 107), 0.25);
+  border-color: rgba(var(--error-rgb, 255, 107, 107), 0.6);
+  box-shadow: 0 2px 8px rgba(var(--error-rgb, 255, 107, 107), 0.15);
+  transform: translateY(-1px);
+}
+  
+
 
 
 
@@ -892,7 +1387,7 @@ a.button:hover {
     width: 250px; /* the width of the menu*/
     height: 100vh; /* ensures thta the menu will have all the height of the screen */
     border-radius: 0;
-    border-right: 1px solid var(--border-color); /* Borde derecho */
+    border-right: 1px solid var(--border-color);
     border-top: none;
     border-bottom: none;
     border-left: none;
@@ -976,7 +1471,10 @@ a.button:hover {
 
   .page-title {
     font-size: 2rem;
- }
+  }
+ .event-meta {
+    flex-direction: row;
+  }
 
 }    
 
@@ -1101,5 +1599,54 @@ a.button:hover {
   .quantity-button { width: 34px; height: 34px; font-size: 1.6rem; }
   .quantity-display { font-size: 1.3rem; }
   .event-detail-description { font-size: 0.95rem; }
+
+  /*mytickets mobil version*/
+   .my-tickets-container {
+      padding: 0.5rem 0;
+  }
+  .my-tickets-tab {
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      flex-grow: 1;
+      text-align: center;
+  }
+  .my-tickets-event-header {
+      padding: 1rem;
+      min-height: 80px;
+      font-size: 1rem;
+  }
+  .my-tickets-event-name { font-size: 1.1rem; }
+  .my-tickets-ticket-count { font-size: 0.8rem; padding: 0.1rem 0.4rem; }
+  .my-tickets-accordion-icon { font-size: 1.3rem; }
+  .my-tickets-event-content.open { padding: 1rem; }
+  .my-tickets-ticket-item { padding: 0.6rem; gap: 0.75rem; }
+  .my-tickets-ticket-image-container { width: 50px; height: 50px; }
+  .my-tickets-ticket-details p { font-size: 0.9rem; }
+  .my-tickets-ticket-status { font-size: 0.8rem !important; }
+
+  /*TickeDetail modal mobile version*/
+
+  .modal-content {
+    padding: 1rem 1.2rem;
+    max-width: 95%; 
+    max-height: 85vh; /*less height than the desktop ver */
+  }
+  .modal-close-button { font-size: 1.8rem; top: 8px; right: 10px; }
+  .ticket-detail-modal__name { font-size: 1.5rem; }
+  .ticket-detail-modal__image { max-width: 180px; } 
+  .ticket-detail-modal__description { font-size: 0.95rem; }
+  .ticket-detail-modal__action-button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.5rem; 
+    min-width: 130px;
+  }
+  .ticket-detail-modal__sell-input { font-size: 1rem; }
+  .ticket-detail-modal__qr-container canvas {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  .ticket-detail-modal__price-info { padding: 0.6rem 0.8rem; }
+  .ticket-detail-modal__price-info p { font-size: 0.9rem; }
+  
 
 }

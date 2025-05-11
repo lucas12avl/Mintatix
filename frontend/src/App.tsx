@@ -11,6 +11,8 @@ import Menu from './components/Menu';
 import EventGrid from './components/Events/EventGrid';
 import EventDetailPage from './components/Events/EventDetailPage.tsx';
 
+import MyTickets from './components/MyTickets/MyTickets.tsx';
+
 function App() {
 
   const account = useAccount(); //get the account information, like the address and the chainId
@@ -69,7 +71,7 @@ function App() {
                 <Route path="/" element={<Navigate to="/events" replace />} /> {/* the default */}
                 <Route path="/events" element={<EventGrid />} />
                 <Route path="/resales" element={<div>resales</div>} />
-                <Route path="/myTickets" element={<div>myTickets Page</div>} />
+                <Route path="/myTickets" element={<MyTickets />} />
                 <Route path="/event/:eventAddress" element={<EventDetailPage />} />
                 <Route path="/eventResale/:eventAddress" element={<div>resaleEvent</div>} />
               </Routes>
