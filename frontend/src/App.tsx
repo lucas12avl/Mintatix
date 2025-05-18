@@ -13,6 +13,9 @@ import EventDetailPage from './components/Events/EventDetailPage.tsx';
 
 import MyTickets from './components/MyTickets/MyTickets.tsx';
 
+import EventGridResales from './components/Resale/EventGridResales.tsx';
+import EventDetailPageResale from './components/Resale/EventDetailPageResale.tsx';
+
 function App() {
 
   const account = useAccount(); //get the account information, like the address and the chainId
@@ -70,10 +73,10 @@ function App() {
               <Routes>
                 <Route path="/" element={<Navigate to="/events" replace />} /> {/* the default */}
                 <Route path="/events" element={<EventGrid />} />
-                <Route path="/resales" element={<div>resales</div>} />
+                <Route path="/resales" element={<EventGridResales/>} />
                 <Route path="/myTickets" element={<MyTickets />} />
                 <Route path="/event/:eventAddress" element={<EventDetailPage />} />
-                <Route path="/eventResale/:eventAddress" element={<div>resaleEvent</div>} />
+                <Route path="/eventResale/:eventAddress" element={<EventDetailPageResale/>} />
               </Routes>
             </>
           ) : ( //case 3: the user is not connected (the user cant be not connected and the worng chain at the same time) --> offer the user the option to connect the wallet 

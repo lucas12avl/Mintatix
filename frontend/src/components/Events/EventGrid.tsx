@@ -97,7 +97,7 @@ const EventGrid = () => {
             <PageTitle />
             <div className="event-grid">
                 {activeEvents.addresses.length === 0 && (
-                    <p>No hay eventos activos en este momento.</p>
+                    <p>There are no active events at this time</p>
                 )}
 
                 {activeEvents.addresses.length > 0 && (

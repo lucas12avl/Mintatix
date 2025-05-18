@@ -1052,7 +1052,7 @@ a.button:hover {
 }
 
 .my-tickets-event-content.open {
-  max-height: 1000px; 
+  max-height: none; 
   padding: 1.5rem;
   border-top: 1px solid var(--border-color);
   transition: max-height 0.4s ease-in, padding 0.4s ease-in;
@@ -1080,17 +1080,17 @@ a.button:hover {
     margin-bottom: 0;
   }
   
-  .my-tickets-ticket-image-container {
-      width: 60px;
-      height: 60px;
-      flex-shrink: 0;
-      border-radius: 6px;
-      overflow: hidden;
-      background-color: var(--bg-content);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
+.my-tickets-ticket-image-container {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--bg-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .my-tickets-ticket-image { 
   width: 100%; 
   height: 100%; 
@@ -1362,11 +1362,83 @@ a.button:hover {
   box-shadow: 0 2px 8px rgba(var(--error-rgb, 255, 107, 107), 0.15);
   transform: translateY(-1px);
 }
+
+
+/* TICKET ITEM RESALE*/
+.resale-tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.resale-ticket-item {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.resale-ticket-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ticket image*/
+.resale-ticket-image-container {
+  width: 100%;
+  aspect-ratio: 1/1; 
+  background-color: var(--bg-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.resale-ticket-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.resale-ticket-placeholder {
+  color: var(--disabled-text);
+  font-size: 0.9rem;
+}
+
+/*ticket details*/
+.resale-ticket-details {
+  padding: 1rem;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.resale-ticket-id {
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  opacity: 0.8;
+  word-break: break-all;
+}
+.resale-ticket-price {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: var(--text-color-light);
+  font-weight: 600;
+}
+.resale-ticket-price strong {
+  color: var(--primary-accent);
+  margin-left: 0.25em;
+}
+.resale-ticket-buy-button {
+  margin-top: auto;
+  align-self: center;
+  width: calc(100% - 2rem);
+  max-width: 200px;
+}
   
-
-
-
-
 /************************************
 *          MEDIA QUERIES            *
 ************************************/
@@ -1477,6 +1549,51 @@ a.button:hover {
   }
 
 }    
+
+/*only for the tickets item resale bc showing only 1 big item it's not practical*/
+@media (max-width: 850px) {
+
+    /*ticket item resale - mobile version and tablets with less px*/
+
+    .resale-tickets-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .resale-ticket-item {
+      flex-direction: row;
+      align-items: center;
+      padding: 0.6rem;
+      gap: 0.75rem;
+    }
+    .resale-ticket-image-container {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+    .resale-ticket-details {
+      flex: 1 1 auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .resale-ticket-buy-button {
+      width: max-content !important;
+      min-width: 0 !important;
+      padding: 0.35rem 0.9rem;
+      flex: 0 0 auto;
+      border-radius: 15px;
+    }
+  
+    .resale-ticket-id,
+    .resale-ticket-price {
+      white-space: nowrap;
+    }
+    .resale-ticket-price { font-size: 1rem; }  
+}
 
 
     
@@ -1647,6 +1764,4 @@ a.button:hover {
   }
   .ticket-detail-modal__price-info { padding: 0.6rem 0.8rem; }
   .ticket-detail-modal__price-info p { font-size: 0.9rem; }
-  
-
 }
