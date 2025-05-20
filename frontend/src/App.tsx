@@ -50,7 +50,7 @@ function App() {
         <AccountHeader address={JSON.stringify(account.address)} onClick={openDisconnect} />
 
         {/* creates a button to redirect the user to the correct chain */} 
-        <ChainSwitcher chainId={account.chainId} targetChainId={hardhat.id} />
+        <ChainSwitcher targetChainId={hardhat.id} />
 
         {/* if the user wants to disconnect the wallet */}
         <Disconnect isOpen={isDisconnectOpen} onClose={closeDisconnect} />
@@ -69,7 +69,7 @@ function App() {
               <Disconnect isOpen={isDisconnectOpen} onClose={closeDisconnect} />
               <Menu />
               <AccountHeader address={JSON.stringify(account.address)} onClick={openDisconnect} />
-              <ChainSwitcher chainId={account.chainId} targetChainId={hardhat.id} />
+              <ChainSwitcher targetChainId={hardhat.id} />
               <Routes>
                 <Route path="/" element={<Navigate to="/events" replace />} /> {/* the default */}
                 <Route path="/events" element={<EventGrid />} />
