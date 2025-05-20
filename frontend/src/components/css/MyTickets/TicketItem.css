@@ -1,0 +1,116 @@
+/*the ticket item inside the accordion*/
+.my-tickets-ticket-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* spece betwwen details and the image*/
+  background-color: var(--bg-item);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem; /* spce between tickets */
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.my-tickets-ticket-item:hover {
+  background-color: var(--bg-content);
+  border-color: #444;
+}
+  .my-tickets-ticket-item:last-child {
+    margin-bottom: 0;
+  }
+  
+.my-tickets-ticket-image-container {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--bg-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.my-tickets-ticket-image { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.my-tickets-ticket-placeholder { 
+  font-size: 0.7rem; 
+  color: var(--disabled-text); 
+  text-align: center; 
+  padding: 0.2rem; 
+}
+  
+.my-tickets-ticket-details {
+  flex-grow: 1;
+  color: var(--text-color);
+  overflow: hidden; /* hide the text overflow if necessary */
+}
+
+.my-tickets-ticket-details p {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap; /*no break*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.my-tickets-ticket-details p:last-child {
+  margin-bottom: 0;
+}
+  
+/*ticket state with colors to be more visual*/
+.my-tickets-ticket-status {
+  font-size: 0.85rem !important; 
+  font-weight: 600 !important;
+  opacity: 1;
+  text-transform: capitalize;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  display: inline-block; /* error with padding slvd*/
+}
+.my-tickets-ticket-status.status-active { 
+  color: var(--success-color); 
+  background-color: rgba(144, 238, 144, 0.1); 
+}
+.my-tickets-ticket-status.status-pending { 
+  color: var(--warning-color); 
+  background-color: rgba(255, 215, 0, 0.1); 
+}
+.my-tickets-ticket-status.status-redeemed { 
+  color: var(--disabled-text);
+  background-color: rgba(85, 85, 85, 0.1); 
+}
+.my-tickets-ticket-status.status-onsale { 
+  color: var(--info-color); 
+  background-color: rgba(91, 192, 222, 0.1); 
+}
+.my-tickets-ticket-status.status-finished { 
+  color: var(--disabled-text); 
+  background-color: rgba(85, 85, 85, 0.1); 
+}
+
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+
+    .my-tickets-ticket-item {
+        padding: 0.6rem;
+        gap: 0.75rem;
+    }
+
+    .my-tickets-ticket-image-container {
+        width: 50px;
+        height: 50px;
+    }
+
+    .my-tickets-ticket-details p {
+        font-size: 0.9rem;
+    }
+
+    .my-tickets-ticket-status {
+        font-size: 0.8rem !important;
+    }
+}

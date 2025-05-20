@@ -1,0 +1,29 @@
+/******** PageTitle.tsx ********/
+
+.page-title { /* padding --> .content or .page-container */
+    margin-bottom: 1.5rem; 
+    font-size: 1.8rem;  
+}
+
+/******Desktop (>= 1025px)******/
+@media (min-width: 1025px) {
+    .page-title {
+        font-size: 2.2rem; /* bigger on desktop */
+        text-align: left; 
+    }
+}
+
+/******Tablet (601px - 1024px)******/
+@media (min-width: 601px) and (max-width: 1024px) {
+    .page-title {
+        font-size: 2rem;
+    }
+}
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+    .page-title {
+        font-size: 1.6rem; /* smaller than the others */
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+}

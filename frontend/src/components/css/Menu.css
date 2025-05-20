@@ -1,0 +1,235 @@
+/****** Menu ********/
+
+.side-menu {
+  background-color: var(--bg-surface);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: fixed;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* minimalist broder */
+  border-radius: 12px;
+  font-weight: bold;
+  z-index: 1000; /* ensure always on top */
+  transition: width 0.3s ease; /* transition for more smooth changes between the 3 styles*/
+}
+
+.menu-logo img {
+  width: 70px;
+  height: auto;
+  display: block;
+}
+
+.side-menu a { /*links inside menu*/
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 2rem; /* more space between the logo and the items  */
+}
+
+.menu-item { /*space between items*/
+  margin-bottom: 1rem;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  white-space: nowrap; /* with this the text will be always in thesame line */
+  overflow: hidden; /*if the text in the same line overflows, the text wont appear */
+}
+
+.menu-link:hover {
+  background-color: rgba(var(--text-color-rgb), 0.15); /*resposive items */
+}
+
+.menu-link.active {
+  background-color: rgba(var(--text-color-rgb), 0.3); /* the text of the active one, has to be less transparent to show as its selected */
+  font-weight: 700;
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0; /* ensure the icon wont be smaller when the width of the screen decreases inside the desktop mode */
+  width: 24px; 
+  text-align: center;
+  margin-right: 1rem;
+}
+
+.menu-label {
+  display: inline; 
+  transition: opacity 0.2s ease;
+}
+
+/******Desktop (>= 1025px)******/
+@media (min-width: 1025px) {
+
+    .main-layout.menu-visible .content {
+    margin-left: 250px; /* desktop menu wdth  */
+  }
+
+  /****** Menu *******/
+  .side-menu {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 250px; /* the width of the menu*/
+    height: 100vh; /* ensures thta the menu will have all the height of the screen */
+    border-radius: 0;
+    border-right: 1px solid var(--border-color);
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+  }
+  .menu-logo {
+    display: flex;
+    align-items: center;
+    padding: 1rem; /* custom fix to put the logo in the right place */
+    margin-bottom: 1rem; /* less margin than desktop */
+  }
+
+  .menu-logo img { 
+        width: 50px; 
+        margin-right: 0.5rem; 
+    } /* smaller logo just in case*/
+  .logo-text { 
+        font-size: 1.5rem; 
+        font-weight: bold; 
+        display: inline; 
+    }
+  .menu-icon { 
+        margin-right: 1rem; 
+    }
+  .menu-label { 
+        display: inline; 
+        opacity: 1; 
+    }
+}
+
+/******Tablet (601px - 1024px)******/
+@media (min-width: 601px) and (max-width: 1024px) {
+    .main-layout.menu-visible .content {
+        margin-left: 80px; /* tablet menu width */
+   }
+
+  /********* Menu --> shows the logo but not the name of the app, the icons name dispalys in the next line, *********/
+    .side-menu { 
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 80px; /* less width for this wide */
+        height: 100vh;
+        padding: 1rem 0.5rem;
+        align-items: center;
+        border-radius: 0;
+        border-right: 1px solid var(--border-color);
+        border-top: none;
+        border-bottom: none;
+        border-left: none;
+    }
+    .menu-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0.5rem 0;
+    }
+    .menu-logo img { 
+        width: 50px; /* smaller logo */
+    } 
+    .logo-text { 
+        display: none; 
+    }
+    .menu-items { 
+        width: 100%; 
+    }
+    .menu-item { 
+        margin-bottom: 1rem; 
+    }
+    .menu-link {
+        flex-direction: column; 
+        justify-content: center;
+        padding: 0.75rem 0;
+        height: 70px; /*  the space that a item have */
+    }
+    .menu-icon {
+        margin-right: 0;
+        margin-bottom: 0.3rem; /* space under the icon */
+        font-size: 1.6rem; /* bigger icons */
+        line-height: 1;
+    }
+    .menu-label {
+        display: block; /* show the label but in the next row */
+        font-size: 0.7rem; /* the label will be smaller */
+        opacity: 0.8; /* some opacity i think looks better */
+        margin-top: 0.2rem;
+        text-align: center;
+        white-space: normal;
+        line-height: 1.2;
+    }
+}
+
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+
+    /****** Menu Mobile *******/
+    .side-menu {
+        position: fixed;
+        bottom: 15px; /* adjust separation */
+        left: 15px;
+        right: 15px;
+        top: auto;
+        width: auto;
+        height: 65px; /* fixed height */
+        padding: 0.5rem; /* less padding than the others */
+        background-color: rgba(var(--bg-surface-rgb, 20, 20, 20), 0.9);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: row; /* make it horizontal */
+        justify-content: space-around;
+        align-items: center;
+        -webkit-backdrop-filter: blur(8px); /*more blur bc it's at the bottom of the screen and its on top of other structures (it has to be clearly visible) */
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+    }
+    .menu-logo { 
+        display: none; 
+    }
+
+    .menu-items { 
+        display: flex; 
+        flex-direction: row; 
+        width: 100%; 
+        justify-content: space-around; 
+        margin-top: 0; 
+        gap: 0.5rem;
+    }
+
+    .menu-item { margin-bottom: 0; flex: 1; }
+  
+    .menu-link {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: auto;       
+        padding: 0.6rem;  
+        margin: 0 1.25rem;
+        border-radius: 8px;
+    }
+    .menu-icon { 
+        font-size: 1.4rem; 
+        margin: 0 0 0 0; /* no margin and smaller icons*/ 
+    }
+    .menu-label { 
+        display: none; /* labels disabled on mobile */ 
+    }
+}

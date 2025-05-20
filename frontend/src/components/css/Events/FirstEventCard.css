@@ -1,0 +1,135 @@
+/******* FirstEventCard.tsx *******/
+
+.first-event-card-wrapper {
+  grid-column: 1 / -1; /* the size of the first card will be all the first row of the grid*/
+}
+
+.first-event-card {
+  --first-card-bg: #0E2127; /*dark cyan*/
+
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--first-card-bg);
+  color: var( --text-color);
+  border-radius: 25px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.first-event-image-wrapper {
+  width: 35vw;
+  max-width: 280px;
+  height: 300px;
+  margin-right: 1.5rem;
+  border-radius: 15px; /* rounded corner */
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.first-event-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.first-event-card:hover .first-event-image {
+  transform: scale(1.1);
+}
+
+.first-event-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.first-event-content h2 {
+  font-size: 2rem; 
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--text-color);
+  word-break: break-word;
+}
+
+.event-info {
+  margin-bottom: 1rem;
+}
+
+.event-info p {
+  font-size: 0.95rem; 
+  font-weight: 300; /* less text weight */
+  margin: 0.25rem 0;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.first-event-content .button { 
+  display: inline-flex; 
+  justify-content: center;
+  align-items: center;
+  align-self: flex-start; /* align to the left */
+  max-width: 250px;
+  min-width: 140px;
+  height: 50px;
+  padding: 0 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid var(--text-color);
+  border-radius: 40px;
+  background: transparent;
+  color: var(---text-color);
+  font-size: 1rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.4s ease; /* smooth transition*/
+}
+
+.first-event-content .button:hover {
+  background: var(--text-color);
+  color: var(--first-card-bg);
+  font-size: 1.05rem;
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+    /***** firstEventCard mobile version ******/
+    .first-event-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+        border-radius: 15px;
+    }
+    .first-event-image-wrapper {
+        width: 100%;
+        max-width: none;
+        height: 200px; /* less heigt than the others  */
+        margin-right: 0;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+    }
+    .first-event-content {
+        width: 100%;
+        padding: 0;
+        align-items: center;
+    }
+    .first-event-content h2 { font-size: 1.5rem; }
+    .event-info p { font-size: 0.9rem; }
+    .first-description { display: none; } /* description Off */
+    .first-event-content .button {
+        width: 80%;
+        max-width: 300px;
+        align-self: center;
+        font-size: 0.95rem;
+    }
+    .first-event-content .button:hover {
+        font-size: 1rem;
+        transform: scale(1.02);
+    }
+}

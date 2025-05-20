@@ -11,6 +11,8 @@ import FirstEventCard from './FirstEventCard';
 import EventCard from './EventCard';
 import PageTitle from '../PageTitle';
 
+import '../css/EventGrid.css';
+
 
 const EventGrid = () => {
 

@@ -15,6 +15,8 @@ import EventAccordion from './EventAccordion.tsx';
 import PageTitle from '../PageTitle.tsx';
 import TicketDetailModal from './TicketDetailModal.tsx';
 
+import '../css/MyTickets/MyTickets.css';
+
 const MyTickets = () => {
 
     const { address: userAddress } = useAccount();

@@ -7,6 +7,8 @@ import type { EventData } from './Interfaces.ts';
 import { PiTriangleFill } from 'react-icons/pi';
 import { TicketMetadata } from './Interfaces.ts';
 
+import '../css/MyTickets/EventAccordion.css';
+
 const EventAccordion = ({event, onTicketClick}: {event: EventData, onTicketClick: (d: { eventAddress: `0x${string}`; ticket: TicketData, metadata: TicketMetadata | null; imageUrl: string | undefined;  eventEndTime?: bigint; location?: string; }) => void}) => {
 
     const [open, setOpen] = useState(false);

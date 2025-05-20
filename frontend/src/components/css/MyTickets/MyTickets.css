@@ -1,0 +1,64 @@
+/****** MY TICKETS *********/
+
+.my-tickets-container {
+  padding: 1rem 0;
+  margin-bottom: 80px;
+}
+  
+/*tabs*/
+.my-tickets-tabs {
+  display: flex;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border-color);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /*hide scrollbar firefox*/
+}
+.my-tickets-tabs::-webkit-scrollbar { display: none; } /* hide scrollbar (Chrome, Safari) */
+  
+.my-tickets-tab {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: var(--disabled-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px; 
+  white-space: nowrap; /* the text wont overflow with this */
+  flex-shrink: 0; /*prevent shrink */
+}
+
+.my-tickets-tab:hover {
+  color: var(--text-color);
+}
+
+.my-tickets-tab.active {
+  color: var(--text-color-light); /* teh active tab will be more light */
+  border-bottom-color: var(--primary-accent); /* and with the color of the text */
+}
+  
+ /*tab content --> the acordion*/
+.my-tickets-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+  
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+    /*mytickets mobil version*/
+    .my-tickets-container {
+        padding: 0.5rem 0;
+    }
+    .my-tickets-tab {
+        padding: 0.7rem 1rem;
+        font-size: 1rem;
+        flex-grow: 1;
+        text-align: center;
+    }
+    
+}

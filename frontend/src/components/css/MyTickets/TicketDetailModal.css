@@ -1,0 +1,272 @@
+/******** TicketDetailModal ***********/
+
+.ticket-detail-modal__image {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  height: auto; 
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto 1.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-item);
+}
+
+.ticket-detail-modal__name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color-light);
+  margin-bottom: 0.75rem;
+}
+
+.ticket-detail-modal__description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* status indicator  */
+.ticket-detail-modal__status-badge-container {
+  margin-bottom: 1.5rem;
+}
+.ticket-detail-modal__status-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+/*states colors  */
+.ticket-detail-modal__status-badge.status--active { background: rgba(144, 238, 144, 0.15); color: var(--success-color); border-color: rgba(144, 238, 144, 0.3); }
+.ticket-detail-modal__status-badge.status--pending { background: rgba(255, 215, 0, 0.15); color: var(--warning-color); border-color: rgba(255, 215, 0, 0.3); }
+.ticket-detail-modal__status-badge.status--redeemed,
+.ticket-detail-modal__status-badge.status--finished { background: rgba(85, 85, 85, 0.15); color: var(--disabled-text); border-color: rgba(85, 85, 85, 0.3); }
+.ticket-detail-modal__status-badge.status--onsale { background: rgba(91, 192, 222, 0.15); color: var(--info-color); border-color: rgba(91, 192, 222, 0.3); }
+
+/* price info when is on sale */
+.ticket-detail-modal__price-info {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 1.5rem auto;
+  max-width: 350px;
+  text-align: center;
+}
+.ticket-detail-modal__price-info p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+.ticket-detail-modal__price-info strong {
+  color: var(--text-color-light);
+  font-weight: 600;
+}
+
+/* actions is QR and on sale */
+.ticket-detail-modal__actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; 
+}
+
+/* if more than one action */
+.ticket-detail-modal__divider--actions {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 0; /* Controlado por gap */
+  width: 80%;
+}
+
+/* header action */
+.ticket-detail-modal__action-header {
+  font-size: 1.3rem;
+  color: var(--text-color-light);
+  margin: 0 0 0.5rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* countdown - QR container */
+.ticket-detail-modal__redeem-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.ticket-detail-modal__qr-container {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  line-height: 0;
+}
+
+/* resale info */
+.ticket-detail-modal__resale-info {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  line-height: 1.5;
+  width: 100%;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.ticket-detail-modal__resale-info strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* resale form*/
+.ticket-detail-modal__sell-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.ticket-detail-modal__sell-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color-light);
+  font-size: 1.1rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-detail-modal__sell-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+.ticket-detail-modal__sell-input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px rgba(var(--primary-accent-rgb, 168, 127, 251), 0.3);
+}
+
+/* action buttons */
+.ticket-detail-modal__action-button {
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 1.8rem; /* same as primary button */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  text-align: center;
+}
+.ticket-detail-modal__action-button:disabled {
+  background: var(--disabled-bg) !important;
+  color: var(--disabled-text) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* redeeem and sekk button*/
+.ticket-detail-modal__action-button.redeem,
+.ticket-detail-modal__action-button.sell {
+  background: linear-gradient(90deg, var(--primary-accent-darker) 0%, var(--primary-accent) 100%);
+  box-shadow: 0 4px 10px rgba(var(--primary-accent-rgb, 138, 79, 255), 0.2);
+}
+.ticket-detail-modal__action-button.redeem:hover:not(:disabled),
+.ticket-detail-modal__action-button.sell:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(var(--primary-accent-rgb, 138, 79, 255), 0.3);
+  filter: brightness(1.1);
+}
+
+/* cancel resale button */
+.ticket-detail-modal__action-button.cancel-sale {
+  background: rgba(var(--error-rgb, 255, 107, 107), 0.15);
+  color: var(--error-color);
+  border: 1px solid rgba(var(--error-rgb, 255, 107, 107), 0.4);
+  box-shadow: none;
+}
+.ticket-detail-modal__action-button.cancel-sale:hover:not(:disabled) {
+  background: rgba(var(--error-rgb, 255, 107, 107), 0.25);
+  border-color: rgba(var(--error-rgb, 255, 107, 107), 0.6);
+  box-shadow: 0 2px 8px rgba(var(--error-rgb, 255, 107, 107), 0.15);
+  transform: translateY(-1px);
+}
+
+.ticket-detail-modal__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+.ticket-detail-modal__meta p {
+  display: inline-block;
+  align-items: baseline;
+  margin-right:0.35rem;
+}
+.ticket-detail-modal__meta p svg {
+  margin-right: 8px;
+}
+
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+
+    /*TickeDetail modal mobile version*/
+
+    .modal-content {
+        padding: 1rem 1.2rem;
+        max-width: 95%; 
+        max-height: 85vh; /*less height than the desktop ver */
+    }
+    .modal-close-button { 
+        font-size: 1.8rem; 
+        top: 8px; 
+        right: 10px; 
+    }
+    .ticket-detail-modal__name { 
+        font-size: 1.5rem; 
+    }
+    .ticket-detail-modal__image { 
+        max-width: 180px; 
+    } 
+    .ticket-detail-modal__description { 
+        font-size: 0.95rem; 
+    }
+    .ticket-detail-modal__action-button {
+        font-size: 0.95rem;
+        padding: 0.7rem 1.5rem; 
+        min-width: 130px;
+    }
+    .ticket-detail-modal__sell-input { 
+        font-size: 1rem; 
+    }
+    .ticket-detail-modal__qr-container canvas {
+        width: 150px !important;
+        height: 150px !important;
+    }
+    .ticket-detail-modal__price-info { 
+        padding: 0.6rem 0.8rem; 
+    }
+    .ticket-detail-modal__price-info p { 
+        font-size: 0.9rem; 
+    }
+}

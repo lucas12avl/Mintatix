@@ -1,0 +1,136 @@
+/*** Event Card --> resale and event ***/
+.event-card {
+  background-color: var(--bg-content);
+  color: var(--text-color);
+  border-radius: 12px;
+  border: 1px solid var(--border-color-accent);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative; /* the card will adjunst to the parent element */
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* tehe iimage container for the eventCard */
+.event-image-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background-color: var(--bg-item);
+}
+
+.event-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.event-image.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--disabled-text);
+  font-size: 0.9rem;
+  background-color: var(--bg-item);
+}
+
+/* zoom efect if the card is not sold out (makes the web more responsive)*/
+.event-card:hover .event-image:not(.event-card.sold-out .event-image) {
+  transform: scale(1.1);
+}
+
+/* SOLD OUT for the image container */
+.sold-out-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.8); /* the backgroud will be more dark to represent better the sold out of the image*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.event-card.sold-out .sold-out-overlay {
+  opacity: 1;
+}
+
+.sold-out-text {
+  color: var(--text-color);
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* content of the card  */
+.event-card-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; 
+  position: relative;
+  z-index: 2;
+}
+
+.event-title { 
+  min-height: 3em; /* the title can be up to 2 lines more or less */
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.event-card-content h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.3;
+  font-weight: 600;
+  word-break: break-word; /*if title is too large, in order to mantain the size of cards, is better to break the string */
+}
+
+.event-details { /*container for the date, location, etc*/
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.event-details p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 500; /* less bold thna the title  */
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+/* error and loading state for cards */
+.event-card.loading,
+.event-card.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 400px;
+  padding: 1rem;
+  cursor: default;
+}
+.event-card.loading p,
+.event-card.error p {
+  font-size: 1rem;
+}
+.event-card.error p {
+    color: var(--error-color);
+}

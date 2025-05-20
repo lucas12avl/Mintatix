@@ -12,6 +12,8 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { BsFillCalendarWeekFill } from 'react-icons/bs';
 import { MdLocationOn } from 'react-icons/md';
 
+import '../css/MyTickets/TicketDetailModal.css';
+
 const LOCAL_KEY = 'ticketRedemptionCountdown';//this is the begining of every key in order to know tht belongs to this component
 const getStorageKey = (tokenId: string, eventAddress: string) => `${LOCAL_KEY}-${eventAddress}-${tokenId}`;
 const getNonceStorageKey = (tokenId: string, eventAddress: string) => `${LOCAL_KEY}-nonce-${eventAddress}-${tokenId}`;

@@ -8,6 +8,8 @@ import eventLogicContract from '../../contracts/EventTicketLogic.json';
 import { BsFillCalendarWeekFill } from 'react-icons/bs';
 import { MdLocationOn } from 'react-icons/md';
 
+import '../css/Events/FirstEventCard.css';
+
 
 const FirstEventCard = ({ eventAddress, eventEndTime }: { eventAddress: string, eventEndTime: bigint }) => {
 

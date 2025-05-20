@@ -13,6 +13,8 @@ import { MdLocationOn } from 'react-icons/md';
 
 import TicketItemResale from './TicketItemResale.tsx';
 
+import '../css/EventDetailPage.css';
+import '../css/Resale/EventDetailPageResale.css'
 
 const EventDetailPageResale = () => {
 
@@ -335,7 +337,7 @@ const EventDetailPageResale = () => {
                             key={ticketData.id.toString()}
                             ticketData={ticketData}
                             remainingAllowancePerUser={remainingAllowancePerUser}
-                            isBuying={isMintingPending} // this is ncorrect , must change by other thing 
+                            isBuying={isMintingPending}
                             onBuy={(tokenId, salePrice) => { //when user clicks the button of the ticketItemResale, the writeContract will be executed with the tokenId and the salePrice of the ticket
                                 writeContract({
                                     address: eventAddress as `0x${string}`,

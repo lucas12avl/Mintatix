@@ -1,0 +1,75 @@
+/***** TicketItemResale.tsx *****/
+.resale-tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.resale-ticket-item {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.resale-ticket-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ticket image*/
+.resale-ticket-image-container {
+  width: 100%;
+  aspect-ratio: 1/1; 
+  background-color: var(--bg-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.resale-ticket-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.resale-ticket-placeholder {
+  color: var(--disabled-text);
+  font-size: 0.9rem;
+}
+
+/*ticket details*/
+.resale-ticket-details {
+  padding: 1rem;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.resale-ticket-id {
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  opacity: 0.8;
+  word-break: break-all;
+}
+.resale-ticket-price {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: var(--text-color-light);
+  font-weight: 600;
+}
+.resale-ticket-price strong {
+  color: var(--primary-accent);
+  margin-left: 0.25em;
+}
+.resale-ticket-buy-button {
+  margin-top: auto;
+  align-self: center;
+  width: calc(100% - 2rem);
+  max-width: 200px;
+}
+  

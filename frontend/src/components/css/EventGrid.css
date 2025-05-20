@@ -1,0 +1,19 @@
+/******** Event grid --> resale and event *******/
+
+.event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; /* gap between cards */
+    padding: 1rem 0; /* OBS:horizontal managed by .content, this is only for vertical Padding  */
+}
+
+/******Mobile (<= 600px)******/
+@media (max-width: 600px) {
+
+    /*the grid for mobile version will be only one column*/
+    .event-grid {
+        grid-template-columns: 1fr; 
+        gap: 1rem;
+        padding: 0;
+    }
+}

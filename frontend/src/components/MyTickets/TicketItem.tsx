@@ -6,6 +6,8 @@ import {useState, useEffect } from 'react';
 import logicContract from '../../contracts/EventTicketLogic.json'
 import { TicketMetadata } from './Interfaces.ts';
 
+import '../css/MyTickets/TicketItem.css';
+
 const TicketItem = ({ eventAddress, ticket, pendingDuration, onClick }: { eventAddress: `0x${string}`, ticket: TicketData, pendingDuration: bigint, onClick: (d: {ticket: TicketData; metadata: TicketMetadata | null; imageUrl: string | undefined}) => void }) => {
 
     const { address: userAddress } = useAccount();

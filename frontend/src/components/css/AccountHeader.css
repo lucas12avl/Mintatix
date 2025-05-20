@@ -1,0 +1,28 @@
+/********* AccountHeader.tsx **********/
+
+.account-header {
+    cursor: pointer;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    z-index: 1001; /*on top of all elements (withou include the disconnect) */
+    -webkit-backdrop-filter: blur(3px); /*blur for safari*/
+    backdrop-filter: blur(3px); /*blur for all the others */
+    transition: background-color 0.3s ease, color 0.3s ease; /* smooth transition */
+    color: var(--text-color);
+  }
+  
+  .balance {
+    margin-right: 10px; /*space between balance and address*/
+  }
+  
+  .account-header:hover {
+    background: var(--text-color);
+    color: var(--bg-dark);
+  }

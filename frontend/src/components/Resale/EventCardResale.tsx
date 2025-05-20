@@ -8,6 +8,7 @@ import { MdLocationOn } from 'react-icons/md';
 import { BsFillCalendarWeekFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom'; //do smthg bc it has to point to the evnenDetailPageResale
 
+import '../css/EventCard.css';
 
 const EventCardResale = ({ eventAddress, eventEndTime }: { eventAddress: string, eventEndTime: bigint }) => {
     const account = useAccount();

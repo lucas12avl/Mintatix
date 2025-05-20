@@ -1,5 +1,7 @@
 import { useDisconnect } from 'wagmi';
 
+import './css/Disconnect.css';
+
 const Disconnect = ({isOpen, onClose}: {isOpen: boolean, onClose: () => any}) => {
 
     const { disconnect } = useDisconnect(); //wagmi hooks that returns the disconnect function

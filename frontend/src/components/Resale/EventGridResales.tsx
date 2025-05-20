@@ -11,6 +11,7 @@ import factoryAddr from '../../contracts/FactoryAddress.json';
 import EventCardResale from './EventCardResale';
 import PageTitle from '../PageTitle';
 
+import '../css/EventGrid.css';
 
 const EventGridResales = () => {
 

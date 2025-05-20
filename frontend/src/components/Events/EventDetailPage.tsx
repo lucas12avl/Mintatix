@@ -11,6 +11,8 @@ import { MdLocationOn } from 'react-icons/md';
 import { HiPlusSm } from "react-icons/hi";
 import { HiMinusSm } from "react-icons/hi";
 
+import '../css/EventDetailPage.css';
+
 const EventDetailPage = () => {
 
     const { eventAddress } = useParams<{ eventAddress: `0x${string}` }>(); //get the address of the event

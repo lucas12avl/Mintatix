@@ -8,6 +8,7 @@ import { MdLocationOn } from 'react-icons/md';
 import { BsFillCalendarWeekFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 
+import '../css/EventCard.css';
 
 const EventCard = ({ eventAddress, eventEndTime }: { eventAddress: string, eventEndTime: bigint }) => {
 

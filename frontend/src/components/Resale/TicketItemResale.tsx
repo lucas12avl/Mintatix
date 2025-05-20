@@ -1,6 +1,8 @@
 import { TicketData } from '../MyTickets/Interfaces.ts';
 import { formatUnits } from 'viem';
 
+import '../css/Resale/TicketItemResale.css';
+
 const TicketItemResale = ({ ticketData, remainingAllowancePerUser, isBuying, onBuy }: { ticketData: TicketData, remainingAllowancePerUser: number, isBuying: boolean, onBuy: (tokenId: bigint, salePrice: bigint) => void }) => {
 
 
