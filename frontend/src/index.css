@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "Montserrat";
-  src: url('./public/fonts/Montserrat.ttf');  /*the font I selected */
+  src: url('/fonts/Montserrat.ttf');  /*the font I selected */
 }
 
 /*global variables */

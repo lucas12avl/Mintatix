@@ -59,7 +59,7 @@ function App() {
   }
 
   return ( //mian layout of the app
-    <BrowserRouter basename='/dashboard/mintatix'>
+    <BrowserRouter basename='/'>
       <div className={`main-layout ${account.isConnected && account.chainId === hardhat.id ? 'menu-visible' : ''}`}> {/*in css, we have 3 media querys to display the content with differents margins for mobile, tablet or desktop*/}
 
         <div className="content"> {/*the main content of the dapp */}

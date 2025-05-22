@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { FaUser, FaTicketAlt, FaExchangeAlt } from 'react-icons/fa';
-import logo from "../public/mintatix_ico_transparent.png";
+import logo from '../mintatix_ico_transparent.png';
 
 import './css/Menu.css';
 
