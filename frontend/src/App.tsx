@@ -82,7 +82,7 @@ function App() {
           ) : ( //case 3: the user is not connected (the user cant be not connected and the worng chain at the same time) --> offer the user the option to connect the wallet 
           
             <div className="page-container" style={{ textAlign: 'center' }}>
-              <h1>Wellcome to Mintatix!</h1>
+              <h1>Welcome to Mintatix!</h1>
               <div className="spacer" />
               <p>Please, connect your wallet to start using the Dapp.</p>
 
