@@ -11,7 +11,7 @@ async function deployContractFixture() { // the smart contrcat initial state for
 
     blockTimestamp = (await ethers.provider.getBlock('latest')).timestamp;
     // params: name, symbol, ticketPrice, maxSupply, eventURI, baseTokenURI, maxTicketsPerAddress, useTimeLimit, startPurchaseTime, eventEndTime
-    await eventTicketFactoryContract.connect(addr1).createEvent("Event001","ETKT", ethers.parseEther("0.1"), 4n, "null", "null", 3n, true, blockTimestamp+1, blockTimestamp+3600);
+    await eventTicketFactoryContract.connect(addr1).createEvent("Event001","ETKT", ethers.parseEther("0.1"), 4n, "null", "null", 3n, blockTimestamp+1, blockTimestamp+3600);
 
 
     const cloneAddress = await eventTicketFactoryContract.connect(addr1).getEvents();
@@ -451,7 +451,7 @@ describe("tries to cancel a sell --> cancelTicketForSale()", function(){
         await eventTicketContract.connect(addr2).addTicketsForSale(2n, 100000000000000000n); //addr2 puts his ticket for sale
 
         await expect(eventTicketContract.connect(addr1).cancelTicketForSale(2n)) //addr1 tries to cncell the sale of addr2
-        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleError");
+        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleRequired");
 
 
     })
@@ -461,7 +461,7 @@ describe("tries to cancel a sell --> cancelTicketForSale()", function(){
         const {eventTicketContract, addr1} = await loadFixture(deployWithTicketOnSaleFixture);
 
         await expect(eventTicketContract.connect(addr1).cancelTicketForSale(1n)) //addr1 tries to cncell the sale of addr2
-        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleError");
+        .to.be.revertedWithCustomError(eventTicketContract, "CancelSaleRequired");
 
     })
 

@@ -20,7 +20,6 @@ contract EventTicketFactory is Ownable {
         uint256 maxSupply,
         string eventURI,
         uint256 maxTicketsPerAddress,
-        bool useTimeLimit,
         uint256 startPurchaseTime,
         uint256 eventEndTime
     );
@@ -43,7 +42,6 @@ contract EventTicketFactory is Ownable {
         string memory _eventURI,
         string memory _baseTokenURI,
         uint256 _maxTicketsPerAddress,
-        bool _useTimeLimit,
         uint256 _startPurchaseTime,
         uint256 _eventEndTime
     ) external onlyOwner returns (address){
@@ -58,7 +56,6 @@ contract EventTicketFactory is Ownable {
             eventURI: _eventURI,
             baseTokenURI: _baseTokenURI,
             maxTicketsPerAddress: _maxTicketsPerAddress,
-            useTimeLimit: _useTimeLimit,
             startPurchaseTime: _startPurchaseTime,
             eventEndTime: _eventEndTime
         });
@@ -69,7 +66,7 @@ contract EventTicketFactory is Ownable {
         );
 
         stateEvents.push(clone);
-        emit EventCreated(clone, msg.sender, _name, _ticketPrice, _maxSupply, _eventURI, _maxTicketsPerAddress, _useTimeLimit, _startPurchaseTime, _eventEndTime);
+        emit EventCreated(clone, msg.sender, _name, _ticketPrice, _maxSupply, _eventURI, _maxTicketsPerAddress, _startPurchaseTime, _eventEndTime);
 
         return clone;
     }

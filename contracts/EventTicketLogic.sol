@@ -37,7 +37,6 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
         string eventURI; 
         string baseTokenURI;
         uint256 maxTicketsPerAddress;
-        bool useTimeLimit;
         uint256 startPurchaseTime;
         uint256 eventEndTime;
     }
@@ -49,8 +48,6 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
     uint256 public maxTicketsPerAddress; //the user cannot have had more than those tickets (even if they sold them and no longer own them)
 
     //time limit (in hours) for making transactions (mint, buy, resell...)
-    bool public useTimeLimit;       //if it's true, the timestap will take effect
-
     //the organizer must set the time in UNIX format
     uint256 public startPurchaseTime;   //indicates when people can start to buy and mint tickets --> you can buy ticktes until the event ends
     uint256 public eventEndTime;    // indicates when the event finishes, from the deplyment of the contract until the event closes  
@@ -99,7 +96,6 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
     error CancelSaleRequired();
     error NotAValidator();
     error InvalidCommit();
-    error CancelSaleError();
 
     constructor(){
         _disableInitializers(); //the constructor is only called once, so, the clones will have disab
@@ -123,16 +119,15 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
         eventURI = config.eventURI;
         baseTokenURI = config.baseTokenURI;
         maxTicketsPerAddress = config.maxTicketsPerAddress;
-        useTimeLimit = config.useTimeLimit;
 
 
         
         startPurchaseTime = config.startPurchaseTime; // its needent to chck if the purchase time is in the past, bc bc the event will be cretaed after the deploy of the event contract
 
-        if (config.useTimeLimit) {
-            if(config.eventEndTime < block.timestamp) revert EventEndBeforeNow(); //the event can't finish before the deployment of the contract
-            eventEndTime = config.eventEndTime;
-        }
+
+        if(config.eventEndTime < block.timestamp) revert EventEndBeforeNow(); //the event can't finish before the deployment of the contract
+        eventEndTime = config.eventEndTime;
+    
         validators[_owner] = true;
 
     }
@@ -141,7 +136,7 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
     *         REQUIRE & MODIFIER        *
     ************************************/
     function _checkActiveEvent() internal view {
-        if (useTimeLimit && block.timestamp >= eventEndTime) revert EventEnded();
+        if (block.timestamp >= eventEndTime) revert EventEnded();
         if (block.timestamp < startPurchaseTime) revert NotStartedYet();
     }
     modifier onlyValidator() {
@@ -274,7 +269,7 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
         // you can also cancel the sale if the event has finished in order to get back your ticket 
         //it's needed to check that is the seller who wants to get back his ticket from the smart contract
   
-        if(!_ticketsForSaleByUser[msg.sender].contains(tokenID)) revert CancelSaleError(); //the ticket is not on sale
+        if(!_ticketsForSaleByUser[msg.sender].contains(tokenID)) revert CancelSaleRequired(); //the ticket is not on sale
 
         tickets[tokenID].seller = address(0);
         tickets[tokenID].salePrice = 0;
@@ -398,7 +393,7 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
     // in order to protect users, any pending tciket or ticket on sale can't be transfered, including the standard transfers with ERC721
     function _beforeTokenTransfers(address from, address to, uint256 tokenID, uint256 quantity) internal override { // this will execute when mint, transferFrom
         
-        if (from != address(0) && to != address(0) && quantity == 1 ) {
+        if (from != address(0) && quantity == 1) { //if it's not minting a new ticket
             _checkPendingStateIsFinished(tokenID);
             
             if(tickets[tokenID].seller != address(0)){ //if the ticket is on sale, transfers are resticted only to put 
@@ -406,17 +401,18 @@ contract EventTicketLogic is Initializable, ERC721AQueryableUpgradeable, Ownable
                 //when we arrive here, the addTicketForSale() puts the info of the seller and the price in the tikcet, before making the trsnfer
                 // thats bc it's needed to look if the transfer that is going to make is to put the contract as owner of the ticket 
                 //(The ticket is in the process of being put on sale)
-                bool isListingSale = (from == tickets[tokenID].seller && to == address(this)); //the case wehn the user whants to put his ticket on sale 
-
-                //if the request is from the smart contract and to is the seller --> 
+                //the case wehn the user whants to put his ticket on sale 
+                //if the request is from the smart contract and to is the seller
                 //the user is trying to get back his ticket that is on sale, and the actual owner (the smart contract) has to auhorize the transfer
-                bool isCancelSale = (from == address(this) && to == tickets[tokenID].seller); 
-
                 //If the ticket is for sale or is being put up for sale, we cannot transfer it to another person with TransferFrom
-                if (!isListingSale && !isCancelSale) revert CancelSaleRequired();
+                if (!((from == tickets[tokenID].seller && to == address(this)) || (from == address(this) && to == tickets[tokenID].seller))) revert CancelSaleRequired();
                 //this revert is just in case a user finds a way to do the transfer, but, the owner of the token is the smart contract when the token is for sale
                 // so the real owner (the seller) can't transfer his token bc it not belongs to him (while it's for sale) 
                 
+            }
+             if (block.timestamp < eventEndTime && from != address(this) && to != address(this)){
+                if (ticketsPurchased[to] + 1 > maxTicketsPerAddress) revert TicketLimitReached();
+                ticketsPurchased[to] += 1;
             }
         }
 
