@@ -10,16 +10,17 @@ Otherwise, an external device will make the RPC call to his own loclahost
 and there will be nothing on his loclahost. You must request the RPC to the IP OF THIS DEVICE
 
 */
-const hardhat2 = {
-  ...hardhat,
-  rpcUrls: {
-    default: { http: ['http://192.168.1.15:8545'] },  // Change this to the IP of the machine on the network you are on
-    public: { http: ['http://192.168.1.15:8545'] },
-  },
-}
+
+// const hardhat2 = {
+//   ...hardhat,
+//   rpcUrls: {
+//     default: { http: ['http://192.168.1.15:8545'] },  // Change this to the IP of the machine on the network you are on
+//     public: { http: ['http://192.168.1.15:8545'] },
+//   },
+// }
 
 export const config = createConfig({
-  chains: [mainnet, sepolia, hardhat2],
+  chains: [mainnet, sepolia, hardhat],
   connectors: [
     metaMask({
       dappMetadata: {
@@ -35,7 +36,7 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [hardhat2.id]: http(),
+    [hardhat.id]: http(),
 
   },
 

@@ -10,9 +10,11 @@ module.exports = {
   solidity: "0.8.28",
   defaultNetwork: "localhost",
   networks: {
-    sepolia: {
+    ...(SEPOLIA_PRIVATE_KEY && INFURA_API_KEY)?{
+      sepolia: {
       url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
       accounts: [SEPOLIA_PRIVATE_KEY],
-    },
+      },
+    }:{}  
   },
 };
