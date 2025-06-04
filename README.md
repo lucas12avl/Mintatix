@@ -3,7 +3,7 @@
 
 **Mintatix** is a full-stack Web 3 solution that turns event tickets into non-fungible tokens (NFTs) on Ethereum.
 It pairs a gas-optimised, upgradeable Solidity smart-contract (ERC-721A) with a React + Wagmi front-end so organisers can mint, sell and validate tickets while protecting fans from scams, fraud and price gouging.
-You can try the final version deployed on Sepolia Network at: https://mintatix.ddns.net/events
+You can try the final version deployed on Sepolia Network at: https://mintatix.ddns.net
 
 ---
 
