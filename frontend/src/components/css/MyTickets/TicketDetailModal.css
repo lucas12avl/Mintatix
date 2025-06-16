@@ -232,41 +232,41 @@
 
     /*TickeDetail modal mobile version*/
 
-    .modal-content {
-        padding: 1rem 1.2rem;
-        max-width: 95%; 
-        max-height: 85vh; /*less height than the desktop ver */
-    }
-    .modal-close-button { 
-        font-size: 1.8rem; 
-        top: 8px; 
-        right: 10px; 
-    }
-    .ticket-detail-modal__name { 
-        font-size: 1.5rem; 
-    }
-    .ticket-detail-modal__image { 
-        max-width: 180px; 
-    } 
-    .ticket-detail-modal__description { 
-        font-size: 0.95rem; 
-    }
-    .ticket-detail-modal__action-button {
-        font-size: 0.95rem;
-        padding: 0.7rem 1.5rem; 
-        min-width: 130px;
-    }
-    .ticket-detail-modal__sell-input { 
-        font-size: 1rem; 
-    }
-    .ticket-detail-modal__qr-container canvas {
-        width: 150px !important;
-        height: 150px !important;
-    }
-    .ticket-detail-modal__price-info { 
-        padding: 0.6rem 0.8rem; 
-    }
-    .ticket-detail-modal__price-info p { 
-        font-size: 0.9rem; 
-    }
+  .modal-content {
+    padding: 1rem 1.2rem;
+    max-width: 95%; 
+    max-height: 85vh; /*less height than the desktop ver */
+  }
+  .modal-close-button { 
+    font-size: 1.8rem; 
+    top: 8px; 
+    right: 10px; 
+  }
+  .ticket-detail-modal__name { 
+    font-size: 1.5rem; 
+  }
+  .ticket-detail-modal__image { 
+    max-width: 180px; 
+  } 
+  .ticket-detail-modal__description { 
+    font-size: 0.95rem; 
+  }
+  .ticket-detail-modal__action-button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.5rem; 
+    min-width: 130px;
+  }
+  .ticket-detail-modal__sell-input { 
+    font-size: 1rem; 
+  }
+  .ticket-detail-modal__qr-container canvas {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  .ticket-detail-modal__price-info { 
+    padding: 0.6rem 0.8rem; 
+  }
+  .ticket-detail-modal__price-info p { 
+    font-size: 0.9rem; 
+  }
 }

@@ -103,27 +103,25 @@
 
 /******Mobile (<= 600px)******/
 @media (max-width: 600px) {
-    .my-tickets-event-header {
-        padding: 1rem;
-        min-height: 80px;
-        font-size: 1rem;
-    }
-    .my-tickets-event-name {
-        font-size: 1.1rem;
-    }
+  .my-tickets-event-header {
+    padding: 1rem;
+    min-height: 80px;
+    font-size: 1rem;
+  }
+  .my-tickets-event-name {
+      font-size: 1.1rem;
+  }
 
-    .my-tickets-ticket-count {
-        font-size: 0.8rem;
-        padding: 0.1rem 0.4rem;
-    }
+  .my-tickets-ticket-count {
+    font-size: 0.8rem;
+    padding: 0.1rem 0.4rem;
+  }
 
-    .my-tickets-accordion-icon {
-        font-size: 1.3rem;
-    }
+  .my-tickets-accordion-icon {
+    font-size: 1.3rem;
+  }
 
-    .my-tickets-event-content.open {
-        padding: 1rem;
-    }
-
-
+  .my-tickets-event-content.open {
+    padding: 1rem;
+  }
 }

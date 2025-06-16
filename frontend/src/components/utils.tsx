@@ -6,8 +6,8 @@ export const formatEventTimestamp = (unixSeconds: number): string => {
             ', ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
     catch (e) {
-        console.error("Error formatting event date:", e);
-        return 'Invalid date';
+        console.error("error formatting event date:", e);
+        return 'Invalid date?';
     }
 
 };

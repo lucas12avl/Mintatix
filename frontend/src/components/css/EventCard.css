@@ -132,5 +132,5 @@
   font-size: 1rem;
 }
 .event-card.error p {
-    color: var(--error-color);
+  color: var(--error-color);
 }

@@ -99,37 +99,39 @@
 
 /******Mobile (<= 600px)******/
 @media (max-width: 600px) {
-    /***** firstEventCard mobile version ******/
-    .first-event-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 1rem;
-        border-radius: 15px;
-    }
-    .first-event-image-wrapper {
-        width: 100%;
-        max-width: none;
-        height: 200px; /* less heigt than the others  */
-        margin-right: 0;
-        margin-bottom: 1rem;
-        border-radius: 10px;
-    }
-    .first-event-content {
-        width: 100%;
-        padding: 0;
-        align-items: center;
-    }
-    .first-event-content h2 { font-size: 1.5rem; }
-    .event-info p { font-size: 0.9rem; }
-    .first-description { display: none; } /* description Off */
-    .first-event-content .button {
-        width: 80%;
-        max-width: 300px;
-        align-self: center;
-        font-size: 0.95rem;
-    }
-    .first-event-content .button:hover {
-        font-size: 1rem;
-        transform: scale(1.02);
-    }
+  /***** firstEventCard mobile version ******/
+  .first-event-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 15px;
+  }
+  .first-event-image-wrapper {
+    width: 100%;
+    max-width: none;
+    height: 200px; /* less heigt than the others  */
+    margin-right: 0;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+  }
+
+  .first-event-content {
+    width: 100%;
+    padding: 0;
+    align-items: center;
+  }
+  .first-event-content h2 { font-size: 1.5rem; }
+  .event-info p { font-size: 0.9rem; }
+  .first-description { display: none; } /* description Off */
+
+  .first-event-content .button {
+    width: 80%;
+    max-width: 300px;
+    align-self: center;
+    font-size: 0.95rem;
+  }
+  .first-event-content .button:hover {
+    font-size: 1rem;
+    transform: scale(1.02);
+  }
 }

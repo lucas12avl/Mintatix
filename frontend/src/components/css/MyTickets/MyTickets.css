@@ -50,15 +50,15 @@
   
 /******Mobile (<= 600px)******/
 @media (max-width: 600px) {
-    /*mytickets mobil version*/
-    .my-tickets-container {
-        padding: 0.5rem 0;
-    }
-    .my-tickets-tab {
-        padding: 0.7rem 1rem;
-        font-size: 1rem;
-        flex-grow: 1;
-        text-align: center;
-    }
+  /*mytickets mobil version*/
+  .my-tickets-container {
+    padding: 0.5rem 0;
+  }
+  .my-tickets-tab {
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    flex-grow: 1;
+    text-align: center;
+  }
     
 }

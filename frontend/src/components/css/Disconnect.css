@@ -6,28 +6,28 @@
     margin-bottom: 1.5rem;
   }
   
-  .disconnect-modal-buttons {
-    display: flex;
-    justify-content: space-around;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
+.disconnect-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-top: 1rem;
+}
   
-  .disconnect-modal-content .button {
-    padding: 0.7rem 1.4rem;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
-  }
-  .disconnect-modal-content .button:hover {
-    opacity: 0.9;
-  }
+.disconnect-modal-content .button {
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: opacity 0.2s ease-in-out, background-color 0.2s ease;
+}
+.disconnect-modal-content .button:hover {
+  opacity: 0.9;
+}
   
-  .back-button { 
-    background: var(--disabled-bg);
-    color: #fff; 
-  }
-  .back-button:hover {
-    background: #666; /* make the btn 'responsive' */
-  }
+.back-button { 
+  background: var(--disabled-bg);
+  color: #fff; 
+}
+.back-button:hover {
+  background: #666; /* make the btn 'responsive' */
+}
   

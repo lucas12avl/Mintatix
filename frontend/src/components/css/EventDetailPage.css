@@ -220,68 +220,68 @@
 /******Desktop (>= 1025px)******/
 @media (min-width: 1025px) {
 
-    /*for event detail page banner */
-    .event-banner-image { height: 350px; }
+  /*for event detail page banner */
+  .event-banner-image { height: 350px; }
   
 }
 
 /******Tablet (601px - 1024px)******/
 @media (min-width: 601px) and (max-width: 1024px) {
 
-    .event-meta {
-       flex-direction: row;
-    }
+  .event-meta {
+    flex-direction: row;
+  }
    
 }
 
 /******Mobile (<= 600px)******/
 @media (max-width: 600px) {
 
-    /* eventDetailPage Mobile Version */
-    .event-banner-image {
-            height: 200px;
-            border-radius: 8px;
-        }
+  /* eventDetailPage Mobile Version */
+  .event-banner-image {
+    height: 200px;
+    border-radius: 8px;
+  }
     
-        .event-title-main {
-            font-size: 1.8rem;
-        }
+  .event-title-main {
+    font-size: 1.8rem;
+  }
     
-        .event-meta {
-            font-size: 0.9rem;
-            gap: 0.5rem 1rem;
-        }
+  .event-meta {
+    font-size: 0.9rem;
+    gap: 0.5rem 1rem;
+  }
     
-        .content-section {
-            padding: 1rem 1.2rem;
-        }
+  .content-section {
+    padding: 1rem 1.2rem;
+  }
     
-        .content-section h2 {
-            font-size: 1.4rem;
-        }
+  .content-section h2 {
+    font-size: 1.4rem;
+  }
     
-        .content-section h3 {
-            font-size: 1.3rem;
-        }
+  .content-section h3 {
+    font-size: 1.3rem;
+  }
     
-        .purchase-button,
-        .button.button-primary {
-            font-size: 1rem;
-            padding: 0.7rem 1.5rem;
-        }
+  .purchase-button,
+  .button.button-primary {
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+  }
     
-        .quantity-button {
-            width: 34px;
-            height: 34px;
-            font-size: 1.6rem;
-        }
+  .quantity-button {
+    width: 34px;
+    height: 34px;
+    font-size: 1.6rem;
+  }
     
-        .quantity-display {
-            font-size: 1.3rem;
-        }
+  .quantity-display {
+    font-size: 1.3rem;
+  }
     
-        .event-detail-description {
-            font-size: 0.95rem;
-        }
+  .event-detail-description {
+    font-size: 0.95rem;
+  }
 
 }
